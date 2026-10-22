@@ -1,4 +1,3 @@
-/* Aparelhos de demonstração. Só entram no modo ?demo=1, nunca no Firebase. */
 
 function fotoDemo(cor, linha) {
   const c = document.createElement('canvas');

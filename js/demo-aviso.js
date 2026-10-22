@@ -1,5 +1,3 @@
-/* Aviso de demonstração. O modo só existe na URL atual (?demo=1) ou em DEMO_MODE.
-   Qualquer 'nc_demo' antigo no celular é apagado, para o cadastro ir ao Firebase. */
 try { localStorage.removeItem('nc_demo'); } catch (e) {}
 document.addEventListener('gesturestart', function (e) { e.preventDefault(); }, { passive: false });
 document.addEventListener('gesturechange', function (e) { e.preventDefault(); }, { passive: false });

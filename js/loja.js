@@ -1,4 +1,3 @@
-/* Vitrine pública. O IMEI não entra nesta página. */
 import { store, DEMO } from './store.js';
 import { midiaAparelho, svgDataUrl, tituloAparelho, nomeCondicao, moeda, mensagemInteresse } from './aparelho.js';
 import { iniciarPedidos } from './pedidos.js';

@@ -1,4 +1,3 @@
-/* Aba Pedidos do painel. */
 import { store } from './store.js';
 import { nomeCondicao, moeda } from './aparelho.js';
 

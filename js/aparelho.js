@@ -1,4 +1,3 @@
-/* Dados do aparelho da vitrine e ilustrações genéricas (sem foto de fabricante). */
 
 export const FAMILIAS = [
   { id: 'iphone-ilha', nome: 'iPhone (ilha)' },
@@ -141,7 +140,6 @@ export function svgDataUrl(familia, corHex) {
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svgMockup(familia, corHex))}`;
 }
 
-/** Fotos reais primeiro. Sem elas, URL colada e depois a ilustração. */
 export function midiaAparelho(p) {
   if (p.fotos && p.fotos.length) return { ilustrativa: false, itens: p.fotos.slice() };
   if (p.imagemUrl) return { ilustrativa: true, itens: [p.imagemUrl] };

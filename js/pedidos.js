@@ -1,4 +1,3 @@
-/* Formulários da vitrine. O e-mail é aviso; o pedido fica no Firestore. */
 import { store, DEMO } from './store.js';
 import { comprimirFoto } from './fotos.js';
 import { tituloAparelho, nomeCondicao, moeda } from './aparelho.js';
@@ -25,12 +24,6 @@ export function mascaraTelefone(valor) {
 
 function digitos(tel) {
   return String(tel || '').replace(/\D/g, '');
-}
-
-function zapCliente(tel) {
-  let n = digitos(tel);
-  if (n.length >= 10 && n.length <= 11) n = '55' + n;
-  return n;
 }
 
 function corte(v, n) {
@@ -99,12 +92,9 @@ function linhasEmail(p) {
 }
 
 async function notificar(pedido) {
-  // Demonstração: o pedido fica no navegador e a tela só mostra sucesso.
   if (DEMO) return;
   const email = String((window.NC_CONFIG && window.NC_CONFIG.EMAIL_NOTIFICACOES) || '').trim();
   if (!email || email.toLowerCase() === 'admin@sualoja.com') return;
-  // Captcha do FormSubmit fica desligado: ligado, a resposta do AJAX deixa de ser JSON.
-  // _honey vazio passa no filtro do FormSubmit; se viesse preenchido, o e-mail é descartado.
   const r = await fetch(`https://formsubmit.co/ajax/${email}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },

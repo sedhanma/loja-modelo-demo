@@ -1,13 +1,8 @@
 rules_version = '2';
 
-// =====================================================================
-//  Regras de segurança do Firestore — Sua Loja
-//  Publique em: Console do Firebase > Firestore Database > Regras
-// =====================================================================
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Quem abre o painel. Use o mesmo e-mail de ADMINS e de EMAIL_GESTOR em js/config.js.
     function isAdmin() {
       return request.auth != null
         && request.auth.token.email in [
@@ -18,16 +13,12 @@ service cloud.firestore {
     function linkDoc(id) { return /databases/$(database)/documents/links/$(id); }
     function txt(v, min, max) { return v is string && v.size() >= min && v.size() <= max; }
 
-    // ---------------- LINKS ----------------
-    // links/{token}: { name, phone, createdAt, used }
     match /links/{linkId} {
-      // Cliente: pode ler APENAS o link cujo token ele tem (não pode listar).
       allow get: if true;
       allow list, delete: if isAdmin();
       allow create: if isAdmin()
         && request.resource.data.used == false
         && request.resource.data.keys().hasOnly(['name', 'phone', 'createdAt', 'used']);
-      // Cliente: só pode mudar used de false -> true, junto com a criação do cadastro (mesmo batch).
       allow update: if isAdmin()
         || (resource.data.used == false
             && request.resource.data.used == true
@@ -36,9 +27,6 @@ service cloud.firestore {
             && existsAfter(/databases/$(database)/documents/submissions/$(linkId)));
     }
 
-    // ---------------- CADASTROS ----------------
-    // submissions/{token}: o ID do cadastro é o próprio token do link,
-    // então cada link só pode gerar UM cadastro.
     match /submissions/{linkId} {
       allow read, update, delete: if isAdmin();
       allow create: if exists(linkDoc(linkId))
@@ -67,9 +55,6 @@ service cloud.firestore {
         && txt(request.resource.data.get('comoConheceuOutro', ''), 0, 120);
     }
 
-    // ---------------- RECIBOS ----------------
-    // submissions/{id}/recibos/{reciboId}: vários recibos por cliente.
-    // Só o lojista lê e grava. O cliente não cria nem vê esta subcoleção.
     match /submissions/{linkId}/recibos/{reciboId} {
       function reciboOk() {
         return request.resource.data.keys().hasOnly([
@@ -113,14 +98,10 @@ service cloud.firestore {
         && request.resource.data.createdAt == resource.data.createdAt;
     }
 
-    // Histórico de vendas: a consulta de todos os recibos (collection group)
-    // só é avaliada por um coringa. Continua só para o lojista, e só leitura.
     match /{path=**}/recibos/{reciboId} {
       allow read: if isAdmin();
     }
 
-    // ---------------- SESSÃO DO PAINEL ----------------
-    // config/sessao: { revogadoEm } — corte antigo. Continua só com o responsável da loja.
     function isGestor() {
       return isAdmin()
         && request.auth.token.email == 'admin@sualoja.com';
@@ -133,8 +114,6 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    // sessoes/{id}: presença de cada aparelho logado.
-    // O lojista só mexe na própria. O responsável lê todas e pode marcar revogado.
     match /sessoes/{sessionId} {
       function sessaoOk(data) {
         return data.keys().hasOnly(['email', 'device', 'createdAt', 'lastSeen', 'revogado'])
@@ -176,8 +155,6 @@ service cloud.firestore {
       );
     }
 
-    // ---------------- VITRINE ----------------
-    // produtos/{id}: aparelhos à venda. O IMEI fica em privado/ficha e não é público.
     function fotosOk(fs) {
       return fs is list && fs.size() <= 4
         && (fs.size() < 1 || (fs[0] is string && fs[0].size() <= 200000))
@@ -239,8 +216,6 @@ service cloud.firestore {
       }
     }
 
-    // ---------------- PEDIDOS (formulários da vitrine) ----------------
-    // Qualquer visitante cria. Só o lojista lê, atualiza e apaga.
     function leadFotos(fs) {
       return fs is list && fs.size() <= 3
         && (fs.size() < 1 || (fs[0] is string && fs[0].size() <= 200000 && fs[0].matches('data:image/jpeg;base64,.+')))
@@ -291,7 +266,6 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
-    // Todo o resto: bloqueado.
     match /{document=**} {
       allow read, write: if false;
     }

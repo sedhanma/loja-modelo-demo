@@ -464,7 +464,6 @@
   <script>
     if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
       window.addEventListener('load', function () {
-        /* Escopo = pasta desta página no GitHub Pages, sem domínio próprio. */
         var scope = new URL('./', location.href).pathname;
         navigator.serviceWorker.register(new URL('sw.js', location.href).href, { scope: scope }).catch(function () {});
       });

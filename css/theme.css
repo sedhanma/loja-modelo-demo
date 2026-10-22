@@ -1,4 +1,3 @@
-/* Tema neutro. As cores vêm de CORES em js/config.js. */
 :root{
   --bg:#16181d;
   --bg-2:#22262e;
@@ -45,7 +44,7 @@ button,a,header,nav,summary,.aba,.rotulo-painel{-webkit-user-select:none;user-se
 input:not([type=checkbox]):not([type=radio]),textarea,select{
   font-size:16px;-webkit-user-select:text;user-select:text;
 }
-body::before{ /* textura sutil */
+body::before{
   content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.35;
   background-image:radial-gradient(rgba(255,255,255,.035) 1px,transparent 1px);
   background-size:3px 3px;

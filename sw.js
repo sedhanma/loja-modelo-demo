@@ -1,7 +1,3 @@
-/* Simulador de Taxa — cache só desta página.
-   Os arquivos são relativos ao escopo do service worker (a pasta do site,
-   por exemplo /loja-modelo-demo/ no GitHub Pages), nunca a raiz do domínio.
-   Outras páginas não são interceptadas. */
 const CACHE = 'simulador-taxa-v6';
 const FILES = [
   'simulador.html',
