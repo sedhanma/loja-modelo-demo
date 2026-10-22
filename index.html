@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-title="{loja} — celulares em {cidade}">
+<head>
+<script src="js/config.js"></script>
+<script src="js/demo-aviso.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#16181d">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="{loja} — celulares novos, seminovos e usados com garantia em {cidade}.">
+<title>Sua Loja — celulares</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/logo.svg">
+<meta property="og:title" content="{loja}">
+<meta property="og:image" content="assets/logo.svg">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Saira:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/vitrine.css">
+</head>
+<body>
+<div class="loja">
+  <header class="loja-top">
+    <picture class="logo-marca">
+      <img src="assets/logo.svg" alt="Sua Loja" class="loja-logo" width="512" height="512" data-logo>
+    </picture>
+    <a class="btn-ghost" id="topoZap" data-zap href="https://wa.me/5500000000000">WhatsApp</a>
+  </header>
+
+  <section class="hero">
+    <div class="selos">
+      <span class="selo">Novos e Seminovos</span>
+      <span class="selo selo-azul">Garantia e Procedência</span>
+    </div>
+    <a class="troca-faixa" href="#troca-iphone">Pegamos seu iPhone na troca</a>
+    <h1>Celulares novos, seminovos e usados com garantia.</h1>
+    <p id="heroSub">Troque de smartphone com segurança e economia em Sua Cidade/UF.</p>
+    <ul class="hero-pontos">
+      <li>Aparelhos revisados</li>
+      <li>Garantia em todos os modelos</li>
+      <li>Atendimento direto</li>
+    </ul>
+    <div class="hero-acoes">
+      <a class="btn-gold" href="#vitrine">Ver aparelhos</a>
+    </div>
+  </section>
+
+  <section class="troca-banner" id="troca-iphone">
+    <p class="kicker">Troca</p>
+    <h2>Seu iPhone vale como entrada</h2>
+    <p>Pegamos seu iPhone na troca. Informe o modelo, o armazenamento, a saúde da bateria e se tem alguma peça trocada (tela, bateria, câmera etc.) para avaliarmos o valor de entrada.</p>
+    <form id="formTroca" class="pedido-form">
+      <label class="hp">Empresa<input name="empresa" tabindex="-1" autocomplete="off"></label>
+      <label class="hp">Não preencha<input name="_honey" tabindex="-1" autocomplete="off"></label>
+      <div class="pedido-2">
+        <label>Nome<input name="nome" required maxlength="80" autocomplete="name"></label>
+        <label>WhatsApp<input name="telefone" data-tel required inputmode="tel" autocomplete="tel" maxlength="16" placeholder="(11) 99999-9999"></label>
+      </div>
+      <div class="pedido-2">
+        <label>Modelo do iPhone<input name="modelo" required maxlength="80" placeholder="iPhone 11"></label>
+        <label>Armazenamento (GB)<input name="armazenamento" type="number" min="1" max="2048" inputmode="numeric" required placeholder="64"></label>
+      </div>
+      <div class="pedido-2">
+        <label>Saúde da bateria (%)<input name="saude" type="number" min="0" max="100" inputmode="numeric" required placeholder="87"></label>
+        <label>Tem alguma peça trocada?
+          <select name="pecaTrocada" id="trocaPeca">
+            <option value="nao">Não</option>
+            <option value="sim">Sim</option>
+            <option value="nao-sei">Não sei</option>
+          </select>
+        </label>
+      </div>
+      <div id="trocaQuais" class="pedido-partes" hidden>
+        <label class="pedido-check"><input type="checkbox" name="parte" value="tela"> Tela</label>
+        <label class="pedido-check"><input type="checkbox" name="parte" value="bateria"> Bateria</label>
+        <label class="pedido-check"><input type="checkbox" name="parte" value="camera"> Câmera</label>
+        <label class="pedido-check"><input type="checkbox" name="parte" value="outra"> Outra</label>
+        <input name="pecaOutra" maxlength="80" placeholder="Qual peça?">
+      </div>
+      <label>Riscos ou trincas
+        <select name="estado">
+          <option value="Sem riscos aparentes">Sem riscos aparentes</option>
+          <option value="Riscos leves">Riscos leves</option>
+          <option value="Trincas">Trincas</option>
+        </select>
+      </label>
+      <div class="pedido-2">
+        <label class="pedido-check"><input type="checkbox" name="caixa"> Acompanha caixa</label>
+        <label class="pedido-check"><input type="checkbox" name="carregador"> Acompanha carregador</label>
+      </div>
+      <label>Aparelho de interesse <i>(opcional)</i><input name="interesse" maxlength="120" placeholder="Qual quer levar"></label>
+      <label>Fotos <i>(opcional, até 3)</i>
+        <input id="trocaFotos" type="file" accept="image/*" multiple>
+      </label>
+      <div id="trocaThumbs" class="thumbs"></div>
+      <p class="pedido-erro" data-erro hidden></p>
+      <button class="btn-gold" type="submit">Pedir avaliação</button>
+    </form>
+    <div id="trocaOk" class="pedido-ok" hidden></div>
+    <a class="link-sec" data-zap data-zap-texto="Olá! Quero avaliar meu iPhone na troca. Modelo: ___ / Armazenamento: ___ / Saúde da bateria: ___ / Tem alguma peça trocada? ___" href="https://wa.me/5500000000000?text=Ol%C3%A1!%20Quero%20avaliar%20meu%20iPhone%20na%20troca.%20Modelo%3A%20___%20%2F%20Armazenamento%3A%20___%20%2F%20Sa%C3%BAde%20da%20bateria%3A%20___%20%2F%20Tem%20alguma%20pe%C3%A7a%20trocada%3F%20___">ou chame no WhatsApp</a>
+  </section>
+
+  <section class="bloco" id="servicos">
+    <p class="indice">01</p>
+    <p class="kicker">01 / Produtos</p>
+    <h2>Nossos produtos e serviços</h2>
+    <p class="olho">Encontre o aparelho ideal com total segurança e procedência.</p>
+    <div class="servicos-grade">
+      <article class="servico">
+        <span class="servico-n">01</span>
+        <b>Celulares novos</b>
+        <p>Modelos atuais com garantia de fábrica e procedência garantida.</p>
+      </article>
+      <article class="servico">
+        <span class="servico-n">02</span>
+        <b>Seminovos revisados</b>
+        <p>Aparelhos testados e revisados por nossa equipe técnica especializada.</p>
+      </article>
+      <article class="servico">
+        <span class="servico-n">03</span>
+        <b>Usados com garantia</b>
+        <p>Economia real sem abrir mão da segurança na sua compra.</p>
+      </article>
+      <article class="servico">
+        <span class="servico-n">04</span>
+        <b>Acessórios</b>
+        <p>Películas, capas e carregadores para proteger seu smartphone.</p>
+      </article>
+    </div>
+    <form id="formOrcamento" class="pedido-form orcamento">
+      <h3>Orçamento / assistência</h3>
+      <p class="olho">Acessório, película ou um aparelho para revisar. A gente responde no WhatsApp.</p>
+      <label class="hp">Empresa<input name="empresa" tabindex="-1" autocomplete="off"></label>
+      <label class="hp">Não preencha<input name="_honey" tabindex="-1" autocomplete="off"></label>
+      <div class="pedido-2">
+        <label>Nome<input name="nome" required maxlength="80" autocomplete="name"></label>
+        <label>WhatsApp<input name="telefone" data-tel required inputmode="tel" autocomplete="tel" maxlength="16" placeholder="(11) 99999-9999"></label>
+      </div>
+      <label>O que você precisa<input name="assunto" required maxlength="80" placeholder="Película, capa, assistência…"></label>
+      <label>Mensagem <i>(opcional)</i><textarea name="mensagem" maxlength="600"></textarea></label>
+      <p class="pedido-erro" data-erro hidden></p>
+      <button class="btn-gold" type="submit">Pedir orçamento</button>
+    </form>
+    <div id="orcOk" class="pedido-ok" hidden></div>
+  </section>
+
+  <section class="seguranca" id="seguranca">
+    <p class="indice">02</p>
+    <p class="kicker">02 / Segurança</p>
+    <div class="selo-giro">
+      <svg viewBox="0 0 200 200" role="img" aria-label="100% garantia e procedência">
+        <circle cx="100" cy="100" r="100" fill="var(--gold-1)"/>
+        <defs>
+          <path id="anelGarantia" d="M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0"/>
+        </defs>
+        <g class="selo-anel">
+          <text fill="var(--gold)" font-size="11.5" font-weight="700" font-family="Manrope, sans-serif">
+            <textPath href="#anelGarantia" textLength="503" lengthAdjust="spacing">GARANTIA E PROCEDÊNCIA • GARANTIA E PROCEDÊNCIA •</textPath>
+          </text>
+        </g>
+        <text x="96" y="116" text-anchor="middle" fill="#ffffff" font-size="62" font-weight="800" font-family="Saira, sans-serif">100</text>
+        <text x="146" y="84" text-anchor="middle" fill="var(--gold)" font-size="20" font-weight="800" font-family="Saira, sans-serif">%</text>
+      </svg>
+    </div>
+    <p class="kicker kicker-linha">Segurança</p>
+    <h2>Troque sem risco</h2>
+    <p class="olho centro">Todos os nossos seminovos e usados passam por testes rigorosos. Você compra com garantia e procedência comprovada.</p>
+    <ul class="risco-lista">
+      <li>Aparelhos revisados item por item</li>
+      <li>Garantia da loja em todos os usados</li>
+      <li>Suporte completo no WhatsApp</li>
+    </ul>
+    <a class="btn-gold" href="#troca-iphone">Avaliar meu iPhone</a>
+  </section>
+
+  <section class="bloco" id="vitrine">
+    <h2>Aparelhos à venda</h2>
+    <p class="olho">Condição, armazenamento, memória e bateria de cada aparelho. Foto real quando a loja envia; senão, imagem ilustrativa.</p>
+    <p id="avisoExemplo" class="olho" hidden>Estes aparelhos são exemplos para mostrar a vitrine. Eles somem quando o Firebase estiver configurado e você cadastrar os seus.</p>
+    <div class="abas-cat" role="tablist" aria-label="Condição">
+      <button type="button" class="on" data-cond="" role="tab" aria-selected="true">Todos</button>
+      <button type="button" data-cond="novo" role="tab" aria-selected="false">Novos</button>
+      <button type="button" data-cond="seminovo" role="tab" aria-selected="false">Seminovos</button>
+      <button type="button" data-cond="usado" role="tab" aria-selected="false">Usados</button>
+    </div>
+    <div class="filtros">
+      <input type="search" id="q" placeholder="Buscar modelo, marca, cor…" autocomplete="off">
+      <select id="fGb" aria-label="Armazenamento">
+        <option value="">Todos os GB</option>
+      </select>
+    </div>
+    <div id="grade" class="grade"></div>
+    <p id="vazio" class="vazio-loja" hidden>Nenhum aparelho anunciado no momento.</p>
+  </section>
+
+  <section class="bloco faq" id="duvidas">
+    <p class="indice">03</p>
+    <p class="kicker">03 / Dúvidas</p>
+    <h2>Tire suas dúvidas agora</h2>
+    <p class="olho">Tire suas dúvidas sobre garantia, procedência e formas de pagamento.</p>
+    <div class="faq-lista">
+      <details>
+        <summary>Os celulares seminovos têm garantia?</summary>
+        <p>Sim. Todos os nossos seminovos e usados passam por revisão rigorosa e contam com garantia para sua segurança.</p>
+      </details>
+      <details>
+        <summary>Como funciona a troca de aparelho?</summary>
+        <p>Pegamos seu iPhone na troca. Chame no WhatsApp com o modelo, o armazenamento, a saúde da bateria e se tem alguma peça trocada (tela, bateria, câmera). Avaliamos o aparelho e o valor entra como entrada na compra.</p>
+      </details>
+      <details>
+        <summary>Quais formas de pagamento são aceitas?</summary>
+        <p>As formas de pagamento variam conforme o aparelho escolhido. Chame no WhatsApp para consultar as opções disponíveis.</p>
+      </details>
+      <details>
+        <summary>Vocês vendem acessórios?</summary>
+        <p>Sim, temos uma linha completa de acessórios para celular para equipar o seu aparelho.</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="sobre" id="contato">
+    <p class="kicker">Atendimento</p>
+    <h2 id="cidadeLocal">Sua Cidade/UF</h2>
+    <a class="zap-num" id="zapLoja" data-zap data-fone href="https://wa.me/5500000000000">(00) 00000-0000</a>
+    <p>Resposta rápida no WhatsApp</p>
+    <dl class="horas">
+      <div><dt>Segunda a Sexta</dt><dd id="horaSemana">Comercial</dd></div>
+      <div><dt>Sábado</dt><dd id="horaSabado">Horário especial</dd></div>
+    </dl>
+    <div class="contatos">
+      <a class="btn-ghost" data-instagram href="https://www.instagram.com/sualoja" target="_blank" rel="noopener">Instagram @sualoja</a>
+    </div>
+  </section>
+
+  <footer class="loja-foot">
+    <picture class="logo-marca">
+      <img src="assets/logo.svg" alt="" class="foot-logo" width="512" height="512" data-logo>
+    </picture>
+    <span id="cidadeRodape">Sua Loja · Sua Cidade/UF</span>
+    <a class="painel-link" id="painel" href="admin.html">Painel</a>
+  </footer>
+</div>
+<a class="zap-flutuante" data-zap href="https://wa.me/5500000000000" aria-label="Falar no WhatsApp">WhatsApp</a>
+<dialog id="detalhe" class="detalhe"></dialog>
+<dialog id="pedido" class="detalhe">
+  <div class="detalhe-in">
+    <button type="button" class="fechar-det" id="fecharPedido" aria-label="Fechar">×</button>
+    <form id="formInteresse" class="pedido-form">
+      <p class="kicker">Interesse</p>
+      <h2>Tenho interesse</h2>
+      <p id="intProduto" class="olho"></p>
+      <label class="hp">Empresa<input name="empresa" tabindex="-1" autocomplete="off"></label>
+      <label class="hp">Não preencha<input name="_honey" tabindex="-1" autocomplete="off"></label>
+      <label>Nome<input name="nome" required maxlength="80" autocomplete="name"></label>
+      <label>WhatsApp<input name="telefone" data-tel required inputmode="tel" autocomplete="tel" maxlength="16" placeholder="(11) 99999-9999"></label>
+      <label>Cidade <i>(opcional)</i><input name="cidade" maxlength="80"></label>
+      <label>Forma de pagamento pretendida
+        <select name="pagamento">
+          <option value="avista">À vista</option>
+          <option value="cartao">Cartão</option>
+          <option value="troca">Troca + diferença</option>
+        </select>
+      </label>
+      <label>Mensagem <i>(opcional)</i><textarea name="mensagem" maxlength="600"></textarea></label>
+      <p class="pedido-erro" data-erro hidden></p>
+      <button class="btn-gold" type="submit">Enviar interesse</button>
+    </form>
+    <div id="intOk" class="pedido-ok" hidden></div>
+  </div>
+</dialog>
+<script type="module" src="js/loja.js"></script>
+</body>
+</html>

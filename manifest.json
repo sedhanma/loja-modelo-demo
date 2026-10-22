@@ -1,0 +1,19 @@
+{
+  "name": "Sua Loja",
+  "short_name": "Sua Loja",
+  "description": "Vitrine de celulares da Sua Loja",
+  "lang": "pt-BR",
+  "start_url": "index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#16181d",
+  "theme_color": "#16181d",
+  "icons": [
+    {
+      "src": "assets/logo.svg",
+      "sizes": "180x180",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

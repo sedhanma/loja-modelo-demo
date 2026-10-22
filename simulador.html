@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-title="{loja} • Simulador">
+<head>
+  <script src="js/config.js"></script>
+<script src="js/demo-aviso.js"></script>
+<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="description" content="Simulador de Taxa - Sua Loja: taxas do cartão, pagamento misto, custo + lucro, entrada + parcelas, desconto à vista e frete USD → BRL.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Simulador de Taxa">
+  <meta name="application-name" content="Simulador de Taxa">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="theme-color" content="#16181d">
+  <meta name="color-scheme" content="dark">
+  <link rel="manifest" href="assets/simulador/manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/logo.svg">
+  <title>Sua Loja • Simulador</title>
+  <link rel="stylesheet" href="css/simulador.css">
+</head>
+<body class="sim-page">
+  <div class="sim-app">
+<div class="container">
+    <div id="home" class="screen active">
+      <header>
+        <h1 data-loja>Sua Loja</h1>
+        <p>Simulador de Cartão</p>
+        <button type="button" class="calc-launch" data-go="calc" aria-label="Calculadora">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="3" width="16" height="18" rx="3"/>
+            <path d="M8 8h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/>
+          </svg>
+        </button>
+      </header>
+
+      <div class="tools">
+        <button class="tool" data-go="misto">Pagamento misto</button>
+        <button class="tool" data-go="lucro">Custo + lucro</button>
+        <button class="tool" data-go="entrada">Entrada + parcelas</button>
+        <button class="tool" data-go="avista">Desconto à vista</button>
+        <button class="tool" data-go="frete">Frete USD → BRL</button>
+      </div>
+
+      <div class="pane pane-in">
+      <div class="card">
+        <label for="valor">Valor que você quer receber</label>
+        <input type="number" id="valor" inputmode="decimal" step="0.01" min="0" value="0" placeholder="0,00">
+      </div>
+      <div class="card">
+        <label for="parcelas">Quantidade de parcelas</label>
+        <select id="parcelas"></select>
+      </div>
+      </div>
+      <div class="pane pane-out">
+      <div class="card result-card">
+        <div class="result-row">
+          <span class="result-label">Valor para o cliente</span>
+          <div class="val-side">
+            <span class="result-value total" id="valorCliente">R$ 0,00</span>
+            <button type="button" class="eye-btn" id="btnOcultar" aria-label="Ocultar">
+              <svg id="iconEye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg id="iconEyeOff" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.8 21.8 0 0 1 5.06-5.94"/><path d="M9.9 4.24A10.94 10.94 0 0 1 12 5c7 0 11 7 11 7a21.77 21.77 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+            <button type="button" class="copy-btn" data-copy="homeCliente" aria-label="Copiar"></button>
+          </div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Valor de cada parcela</span>
+          <div class="val-side">
+            <span class="result-value" id="valorParcela">R$ 0,00</span>
+            <button type="button" class="copy-btn" data-copy="homeParcela"></button>
+          </div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Complemento</span>
+          <div class="val-side">
+            <span class="result-value" id="homeNx">1x R$ 0,00</span>
+            <button type="button" class="copy-btn" data-copy="homeNx"></button>
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn wa" data-wa="home">Enviar no WhatsApp</button>
+        <button type="button" class="btn primary" data-go="maquina">Quanto vai cair na conta</button>
+        <button type="button" class="btn" id="btnRates">Ver tabela de taxas</button>
+      </div>
+      <div class="rates-table" id="ratesTable">
+        <div class="card" style="padding:12px 16px">
+          <table><thead><tr><th>Parcelas</th><th>Taxa</th></tr></thead><tbody id="ratesBody"></tbody></table>
+        </div>
+      </div>
+      </div>
+      <p class="hint">Altere o valor e as parcelas. Toque no ícone ao lado do valor para copiar.</p>
+      <p class="credit">Criado por @n1huggo</p>
+    </div>
+
+    <div id="maquina" class="screen">
+      <div class="overlay-top">
+        <button type="button" class="back" data-go="home">Voltar</button>
+        <h2>Quanto vai cair</h2>
+        <span style="width:58px"></span>
+      </div>
+      <div class="pane pane-in">
+      <div class="card">
+        <label for="valorM">Valor que vai passar na maquininha</label>
+        <input type="number" id="valorM" inputmode="decimal" step="0.01" min="0" value="0">
+      </div>
+      <div class="card">
+        <label for="parcelasM">Forma de pagamento</label>
+        <select id="parcelasM"></select>
+      </div>
+      </div>
+      <div class="pane pane-out">
+      <div class="card result-card">
+        <div class="big-pass">
+          <div class="k">Vai cair na conta</div>
+          <div class="val-side" style="justify-content:center">
+            <div class="v" id="passarValor">R$ 0,00</div>
+            <button type="button" class="copy-btn" data-copy="maqCai"></button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="result-row">
+          <span class="result-label">Taxa descontada</span>
+          <div class="val-side"><span class="result-value" id="receberValor">R$ 0,00</span><button class="copy-btn" data-copy="maqTaxaR$"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Taxa da maquininha</span>
+          <div class="val-side"><span class="result-value" id="taxaValor">0,00%</span><button class="copy-btn" data-copy="maqTaxaPct"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Valor de cada parcela</span>
+          <div class="val-side"><span class="result-value" id="parcelaMValor">R$ 0,00</span><button class="copy-btn" data-copy="maqParcela"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Complemento</span>
+          <div class="val-side"><span class="result-value" id="maqNx">1x R$ 0,00</span><button class="copy-btn" data-copy="maqNx"></button></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn wa" data-wa="maquina">Enviar no WhatsApp</button>
+      </div>
+            </div>
+<p class="credit">Criado por @n1huggo</p>
+    </div>
+
+    <div id="misto" class="screen">
+      <div class="overlay-top">
+        <button type="button" class="back" data-go="home">Voltar</button>
+        <h2>Pagamento misto</h2>
+        <span style="width:58px"></span>
+      </div>
+      <div class="pane pane-in">
+      <div class="card">
+        <label for="mistoTotal">Valor total da venda</label>
+        <input type="number" id="mistoTotal" inputmode="decimal" step="0.01" min="0" value="0">
+      </div>
+      <div class="card">
+        <label for="mistoPix">Valor no Pix</label>
+        <input type="number" id="mistoPix" inputmode="decimal" step="0.01" min="0" value="0">
+      </div>
+      <div class="card">
+        <label for="mistoParc">Parcelas do restante no cartão</label>
+        <select id="mistoParc"></select>
+      </div>
+      </div>
+      <div class="pane pane-out">
+      <div class="card result-card">
+        <div class="result-row">
+          <span class="result-label">Pix</span>
+          <div class="val-side"><span class="result-value total" id="mistoPixOut">R$ 0,00</span><button class="copy-btn" data-copy="mistoPix"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Restante (preço combinado)</span>
+          <div class="val-side"><span class="result-value" id="mistoRest">R$ 0,00</span><button class="copy-btn" data-copy="mistoRest"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Complemento do restante</span>
+          <div class="val-side"><span class="result-value" id="mistoNx">1x R$ 0,00</span><button class="copy-btn" data-copy="mistoNx"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Cai do cartão (se passar o restante)</span>
+          <div class="val-side"><span class="result-value" id="mistoCai">R$ 0,00</span><button class="copy-btn" data-copy="mistoCai"></button></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="result-row">
+          <span class="result-label">Cobrar no cartão pra receber o restante inteiro</span>
+          <div class="val-side"><span class="result-value" id="mistoCobrar">R$ 0,00</span><button class="copy-btn" data-copy="mistoCobrar"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Complemento (taxa embutida)</span>
+          <div class="val-side"><span class="result-value" id="mistoNxEmb">1x R$ 0,00</span><button class="copy-btn" data-copy="mistoNxEmb"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Resumo</span>
+          <div class="val-side"><span class="result-value" id="mistoResumo">Pix + cartão</span><button class="copy-btn" data-copy="mistoResumo"></button></div>
+        </div>
+      </div>
+      <div class="actions"><button type="button" class="btn wa" data-wa="misto">Enviar no WhatsApp</button></div>
+      </div>
+      <p class="hint">Pix à parte + restante no cartão. O resumo já vai no formato Pix + 8x R$ …</p>
+      <p class="credit">Criado por @n1huggo</p>
+    </div>
+
+    <div id="lucro" class="screen">
+      <div class="overlay-top">
+        <button type="button" class="back" data-go="home">Voltar</button>
+        <h2>Custo + lucro</h2>
+        <span style="width:58px"></span>
+      </div>
+      <div class="pane pane-in">
+      <div class="card">
+        <label for="custoAp">Custo do aparelho</label>
+        <input type="number" id="custoAp" inputmode="decimal" step="0.01" min="0" value="0">
+      </div>
+      <div class="card">
+        <label>Lucro desejado</label>
+        <div class="seg">
+          <button type="button" class="on" id="lucroTipoR">R$</button>
+          <button type="button" id="lucroTipoP">%</button>
+        </div>
+        <input type="number" id="lucroVal" inputmode="decimal" step="0.01" min="0" value="0">
+      </div>
+      <div class="card">
+        <label for="lucroParc">Venda no cartão</label>
+        <select id="lucroParc"></select>
+      </div>
+      </div>
+      <div class="pane pane-out">
+      <div class="card result-card">
+        <div class="result-row">
+          <span class="result-label">Lucro</span>
+          <div class="val-side"><span class="result-value" id="lucroOut">R$ 0,00</span><button class="copy-btn" data-copy="lucroOut"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Mínimo à vista / Pix</span>
+          <div class="val-side"><span class="result-value total" id="lucroPix">R$ 0,00</span><button class="copy-btn" data-copy="lucroPix"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Preço no cartão</span>
+          <div class="val-side"><span class="result-value" id="lucroCard">R$ 0,00</span><button class="copy-btn" data-copy="lucroCard"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Complemento</span>
+          <div class="val-side"><span class="result-value" id="lucroNx">1x R$ 0,00</span><button class="copy-btn" data-copy="lucroNx"></button></div>
+        </div>
+      </div>
+      <div class="actions"><button type="button" class="btn wa" data-wa="lucro">Enviar no WhatsApp</button></div>
+      </div>
+      <p class="hint">Custo + lucro = o que precisa cair. No cartão a taxa é embutida.</p>
+      <p class="credit">Criado por @n1huggo</p>
+    </div>
+
+    <div id="entrada" class="screen">
+      <div class="overlay-top">
+        <button type="button" class="back" data-go="home">Voltar</button>
+        <h2>Entrada + parcelas</h2>
+        <span style="width:58px"></span>
+      </div>
+      <div class="pane pane-in">
+      <div class="card">
+        <label for="entTotal">Valor total</label>
+        <input type="number" id="entTotal" inputmode="decimal" step="0.01" min="0" value="0">
+      </div>
+      <div class="card">
+        <label for="entValor">Valor da entrada</label>
+        <input type="number" id="entValor" inputmode="decimal" step="0.01" min="0" value="0">
+      </div>
+      <div class="card">
+        <label for="entParc">Parcelas do restante</label>
+        <select id="entParc"></select>
+      </div>
+      </div>
+      <div class="pane pane-out">
+      <div class="card result-card">
+        <div class="result-row">
+          <span class="result-label">Entrada</span>
+          <div class="val-side"><span class="result-value total" id="entOut">R$ 0,00</span><button class="copy-btn" data-copy="entOut"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Restante</span>
+          <div class="val-side"><span class="result-value" id="entRest">R$ 0,00</span><button class="copy-btn" data-copy="entRest"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Complemento</span>
+          <div class="val-side"><span class="result-value" id="entNx">1x R$ 0,00</span><button class="copy-btn" data-copy="entNx"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Resumo</span>
+          <div class="val-side"><span class="result-value" id="entResumo">Entrada + parcelas</span><button class="copy-btn" data-copy="entResumo"></button></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="result-row">
+          <span class="result-label">Cobrar no cartão pra receber o restante</span>
+          <div class="val-side"><span class="result-value" id="entCobrar">R$ 0,00</span><button class="copy-btn" data-copy="entCobrar"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Complemento (taxa embutida)</span>
+          <div class="val-side"><span class="result-value" id="entNxEmb">1x R$ 0,00</span><button class="copy-btn" data-copy="entNxEmb"></button></div>
+        </div>
+      </div>
+      <div class="actions"><button type="button" class="btn wa" data-wa="entrada">Enviar no WhatsApp</button></div>
+            </div>
+<p class="credit">Criado por @n1huggo</p>
+    </div>
+
+    <div id="avista" class="screen">
+      <div class="overlay-top">
+        <button type="button" class="back" data-go="home">Voltar</button>
+        <h2>Desconto à vista</h2>
+        <span style="width:58px"></span>
+      </div>
+      <div class="pane pane-in">
+      <div class="card">
+        <label>Desconto configurado (digite)</label>
+        <div class="seg">
+          <button type="button" class="on" id="descTipoP">%</button>
+          <button type="button" id="descTipoR">R$</button>
+        </div>
+        <input type="number" id="descCfg" inputmode="decimal" step="0.01" min="0" value="5">
+        <p class="hint" style="margin-top:10px">Esse valor fica salvo e vale até você mudar.</p>
+      </div>
+      <div class="card">
+        <label for="avistaOrig">Valor original</label>
+        <input type="number" id="avistaOrig" inputmode="decimal" step="0.01" min="0" value="0">
+      </div>
+      </div>
+      <div class="pane pane-out">
+      <div class="card result-card">
+        <div class="result-row">
+          <span class="result-label">Desconto</span>
+          <div class="val-side"><span class="result-value" id="avistaDesc">R$ 0,00</span><button class="copy-btn" data-copy="avistaDesc"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Preço à vista</span>
+          <div class="val-side"><span class="result-value total" id="avistaFinal">R$ 0,00</span><button class="copy-btn" data-copy="avistaFinal"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Complemento</span>
+          <div class="val-side"><span class="result-value" id="avistaComp">À vista R$ 0,00</span><button class="copy-btn" data-copy="avistaComp"></button></div>
+        </div>
+      </div>
+      <div class="actions"><button type="button" class="btn wa" data-wa="avista">Enviar no WhatsApp</button></div>
+            </div>
+<p class="credit">Criado por @n1huggo</p>
+    </div>
+
+
+    <div id="frete" class="screen">
+      <div class="overlay-top">
+        <button type="button" class="back" data-go="home">Voltar</button>
+        <h2>Frete USD → BRL</h2>
+        <span style="width:58px"></span>
+      </div>
+      <div class="pane pane-in">
+      <div class="card">
+        <label for="freteValor">Valor em dólar (US$)</label>
+        <input type="number" id="freteValor" inputmode="decimal" step="0.01" min="0" placeholder="Digite aqui">
+      </div>
+      <div class="card">
+        <label for="freteCotacao">Cotação do dólar (R$)</label>
+        <input type="number" id="freteCotacao" inputmode="decimal" step="0.01" min="0" placeholder="Digite aqui">
+      </div>
+      <div class="card">
+        <label for="fretePct">Porcentagem do frete (%)</label>
+        <input type="number" id="fretePct" inputmode="decimal" step="0.1" min="0" placeholder="Digite aqui">
+      </div>
+      <div class="card">
+        <label for="freteExtra">Frete extra (R$)</label>
+        <input type="number" id="freteExtra" inputmode="decimal" step="0.01" min="0" placeholder="Digite aqui">
+      </div>
+      </div>
+      <div class="pane pane-out">
+      <div class="card result-card">
+        <div class="result-row">
+          <span class="result-label">Produto</span>
+          <div class="val-side"><span class="result-value" id="freteProd">—</span><button class="copy-btn" data-copy="freteProd"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Frete %</span>
+          <div class="val-side"><span class="result-value" id="fretePctOut">—</span><button class="copy-btn" data-copy="fretePctOut"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Frete extra</span>
+          <div class="val-side"><span class="result-value" id="freteExtraOut">—</span><button class="copy-btn" data-copy="freteExtraOut"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Total em dólar</span>
+          <div class="val-side"><span class="result-value" id="freteUsd">—</span><button class="copy-btn" data-copy="freteUsd"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Valor final</span>
+          <div class="val-side"><span class="result-value total" id="freteBrl">—</span><button class="copy-btn" data-copy="freteBrl"></button></div>
+        </div>
+      </div>
+      <div class="actions"><button type="button" class="btn wa" data-wa="frete">Enviar no WhatsApp</button></div>
+      </div>
+      <p class="hint">Valor final = (dólar + % do frete) × cotação + frete extra em reais.</p>
+      <p class="credit">Criado por @n1huggo</p>
+    </div>
+
+    <div id="calc" class="screen">
+      <div class="c-top">
+        <button type="button" class="c-icon" id="calcMenuBtn" aria-label="Menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="3" width="16" height="18" rx="3"/>
+            <path d="M8 8h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/>
+          </svg>
+        </button>
+        <button type="button" class="back" data-go="home">Início</button>
+      </div>
+      <div class="c-display">
+        <div class="c-expr" id="cExpr"></div>
+        <div class="c-val" id="cVal">0</div>
+      </div>
+      <div class="c-pad" id="cPad">
+        <button class="ck top" id="cAc">AC</button>
+        <button class="ck top" data-fn="sign">+/−</button>
+        <button class="ck top" data-fn="pct">%</button>
+        <button class="ck op" data-op="÷">÷</button>
+        <button class="ck" data-num="7">7</button>
+        <button class="ck" data-num="8">8</button>
+        <button class="ck" data-num="9">9</button>
+        <button class="ck op" data-op="×">×</button>
+        <button class="ck" data-num="4">4</button>
+        <button class="ck" data-num="5">5</button>
+        <button class="ck" data-num="6">6</button>
+        <button class="ck op" data-op="−">−</button>
+        <button class="ck" data-num="1">1</button>
+        <button class="ck" data-num="2">2</button>
+        <button class="ck" data-num="3">3</button>
+        <button class="ck op" data-op="+">+</button>
+        <button class="ck wide" data-num="0">0</button>
+        <button class="ck" data-fn="dot">,</button>
+        <button class="ck op" data-fn="eq">=</button>
+      </div>
+      <div class="c-sheet" id="cSheet">
+        <div class="c-menu">
+          <button class="active" data-go="basic">Básica</button>
+          <button id="cOpenHist">Histórico</button>
+          <button data-go="home">Voltar ao início</button>
+        </div>
+      </div>
+      <div class="c-hist" id="cHist">
+        <div class="c-hist-head">
+          <button class="ghost" id="cHistBack">Voltar</button>
+          <h2>Histórico</h2>
+          <button class="ghost" id="cHistClear">Limpar</button>
+        </div>
+        <p class="c-hint">Toque numa conta para usar o resultado.</p>
+        <div class="c-hist-list" id="cHistList"></div>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast">Copiado</div>
+  </div>
+  <script src="js/simulador.js"></script>
+  <script>
+    if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+      window.addEventListener('load', function () {
+        /* Escopo = pasta desta página no GitHub Pages, sem domínio próprio. */
+        var scope = new URL('./', location.href).pathname;
+        navigator.serviceWorker.register(new URL('sw.js', location.href).href, { scope: scope }).catch(function () {});
+      });
+    }
+  </script>
+</body>
+</html>

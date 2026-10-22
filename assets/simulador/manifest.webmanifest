@@ -1,0 +1,22 @@
+{
+  "name": "Simulador de Taxa - Sua Loja",
+  "short_name": "Simulador de Taxa",
+  "description": "Simulador de cartão da Sua Loja: taxas, pagamento misto, custo + lucro, entrada + parcelas, desconto à vista e frete USD → BRL.",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "id": "../../simulador.html",
+  "start_url": "../../simulador.html",
+  "scope": "../../",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#16181d",
+  "theme_color": "#16181d",
+  "categories": ["business", "finance", "utilities"],
+  "icons": [
+    { "src": "../logo.svg", "sizes": "192x192", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "../logo.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "../logo.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "maskable" },
+    { "src": "../logo.svg", "sizes": "180x180", "type": "image/svg+xml" }
+  ]
+}

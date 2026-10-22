@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-title="Painel · {loja}">
+<head>
+<script src="js/config.js"></script>
+<script src="js/demo-aviso.js"></script>
+<meta charset="UTF-8">
+<style id="anti-frame">body{display:none !important}</style>
+<script>
+(function () {
+  if (window.top === window.self) {
+    var s = document.getElementById('anti-frame');
+    if (s) s.remove();
+  } else {
+    try { window.top.location = window.self.location; } catch (e) {}
+  }
+})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sua Loja">
+<meta name="theme-color" content="#16181d">
+<meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex">
+<title>Painel · Sua Loja</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/logo.svg">
+<meta property="og:title" content="Painel · Sua Loja">
+<meta property="og:image" content="assets/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Saira:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/admin.css">
+<link rel="stylesheet" href="css/vitrine.css">
+<link rel="stylesheet" href="css/simulador.css">
+</head>
+<body class="app">
+<header class="top">
+  <div class="top-in">
+    <picture class="logo-marca">
+      <img src="assets/logo.svg" alt="Sua Loja" class="top-logo" width="512" height="512" data-logo>
+    </picture>
+    <nav class="nav-r"><span class="rotulo-painel">Painel de cadastros</span><button class="btn-ghost sm sair" id="sair" hidden>Sair</button></nav>
+  </div>
+</header>
+
+<main class="admin">
+  <!-- carregando -->
+  <div id="vCarregando" class="loading-view"><span class="spin"></span></div>
+
+  <!-- Firebase ainda não configurado -->
+  <section id="vSetup" class="panel setup" hidden>
+    <div class="state-badge">⚙️</div>
+    <h2>Quase lá! Falta conectar o banco de dados</h2>
+    <p>Este painel guarda os cadastros no <b>Firebase</b> (gratuito). Para ativar:</p>
+    <ol>
+      <li>Crie o projeto no Firebase e ative <b>Firestore</b> e <b>login por e-mail/senha</b>.</li>
+      <li>Cole o <code>firebaseConfig</code> no arquivo <code>js/config.js</code>.</li>
+      <li>Publique as regras do arquivo <code>firestore.rules</code>.</li>
+    </ol>
+    <p>O passo a passo completo está no arquivo <code>GUIA-INSTALACAO.md</code>.</p>
+    <div class="btns"><a class="btn-gold" href="?demo=1">Testar em modo demonstração</a></div>
+    <p class="loja-contato">WhatsApp <a data-zap data-fone href="https://wa.me/5500000000000">(00) 00000-0000</a> · <a data-instagram href="https://www.instagram.com/sualoja" target="_blank" rel="noopener">Instagram @sualoja</a></p>
+  </section>
+
+  <!-- Login -->
+  <section id="vLogin" class="login" hidden>
+    <form id="loginForm" class="panel login-card" novalidate>
+      <picture class="logo-marca">
+        <img src="assets/logo.svg" alt="" class="login-logo" width="512" height="512" data-logo>
+      </picture>
+      <h1>Acesso do <span class="gold-text">lojista</span></h1>
+      <p class="login-sub">Entre para gerar links e ver os cadastros dos clientes.</p>
+      <p class="login-sub" id="dicaDemo" hidden></p>
+      <p class="loja-contato">WhatsApp <a data-zap data-fone href="https://wa.me/5500000000000">(00) 00000-0000</a> · <a data-instagram href="https://www.instagram.com/sualoja" target="_blank" rel="noopener">Instagram @sualoja</a></p>
+      <label class="nc-in"><span>Usuário</span><input type="text" id="lUsuario" placeholder="Usuário" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required></label>
+      <label class="nc-in"><span>Senha</span><input type="password" id="lSenha" autocomplete="current-password" required></label>
+      <label class="manter"><input type="checkbox" id="lManter" checked> Manter conectado neste aparelho</label>
+      <div class="login-err" id="lErro" hidden></div>
+      <button class="btn-gold" type="submit" id="lBtn">Entrar</button>
+    </form>
+  </section>
+
+  <!-- Painel -->
+  <div id="vPainel" hidden>
+  <div class="abas" role="tablist" aria-label="Seções do painel">
+    <button type="button" class="aba" id="tabVitrine" role="tab" aria-selected="false" aria-controls="abaVitrine">Vitrine</button>
+    <button type="button" class="aba" id="tabPedidos" role="tab" aria-selected="false" aria-controls="abaPedidos">Pedidos</button>
+    <button type="button" class="aba on" id="tabCadastros" role="tab" aria-selected="true" aria-controls="abaCadastros">Cadastros</button>
+    <button type="button" class="aba" id="tabVendas" role="tab" aria-selected="false" aria-controls="abaVendas">Vendas</button>
+    <button type="button" class="aba" id="tabSimulador" role="tab" aria-selected="false" aria-controls="abaSimulador">Simulador de Taxa</button>
+  </div>
+  <div id="abaCadastros" role="tabpanel" aria-labelledby="tabCadastros">
+  <section class="intro">
+    <h1>Cadastro do cliente para <span class="gold-text">recibo e garantia</span></h1>
+    <p>Gere um link exclusivo, envie ao cliente e receba os dados prontos para emitir a nota fiscal, o recibo e o termo de garantia.</p>
+  </section>
+
+  <div class="layout">
+    <section class="panel">
+      <h2><span class="num">1</span> Gerar link para o cliente</h2>
+<div class="nc-linkbox" id="ncLinkBox">
+  <div class="nc-row">
+    <label class="nc-in"><span>Nome do cliente <i>(opcional)</i></span>
+      <input type="text" id="ncCliente" placeholder="Ex.: João Silva — iPhone 13">
+    </label>
+    <label class="nc-in"><span>WhatsApp do cliente <i>(opcional)</i></span>
+      <input type="tel" id="ncFone" inputmode="numeric" placeholder="(31) 90000-0000" maxlength="15">
+    </label>
+  </div>
+  <button type="button" class="nc-btn" id="ncGerar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>
+    <span>Enviar link pra pegar os dados</span>
+  </button>
+  <div class="nc-result" id="ncResult" hidden>
+    <div class="nc-ok">✓ Link gerado! Envie para o cliente:</div>
+    <div class="nc-linkline"><input type="text" id="ncLink" readonly></div>
+    <div class="nc-actions">
+      <button type="button" class="nc-ghost" id="ncCopiar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+        <span>Copiar link</span>
+      </button>
+      <a class="nc-ghost nc-wa" id="ncWhats" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 4.9 4.3 2.4.9 2.9.8 3.4.7.5-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2z"/></svg>
+        <span>Enviar no WhatsApp</span>
+      </a>
+    </div>
+  </div>
+  <div class="nc-error" id="ncErro" hidden></div>
+</div>
+
+<style>
+  .nc-linkbox{--nc-gold:#e0b15a;--nc-gold-l:#f3ddb0;font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;color:#f4ede1;
+    background:linear-gradient(160deg,#16130f,#06140c);border:1px solid rgba(var(--gold-rgb),.25);border-radius:18px;padding:20px;max-width:640px;
+    box-shadow:0 24px 60px -30px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,236,200,.06);box-sizing:border-box}
+  .nc-linkbox *{box-sizing:border-box}
+  .nc-row{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:14px}
+  @media(min-width:560px){.nc-row{grid-template-columns:1fr 1fr}}
+  .nc-in{display:flex;flex-direction:column;gap:6px;font-size:.78rem;font-weight:700;color:#a59b8a;letter-spacing:.02em}
+  .nc-in i{font-style:normal;font-weight:500;opacity:.7}
+  .nc-in input,.nc-linkline input{width:100%;height:46px;padding:0 14px;font-family:inherit;font-size:16px;font-weight:500;color:#f4ede1;background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.09);border-radius:12px;outline:none;transition:.2s}
+  .nc-in input:focus,.nc-linkline input:focus{border-color:var(--nc-gold);box-shadow:0 0 0 4px rgba(var(--gold-rgb),.14)}
+  .nc-in input::placeholder{color:#6e665b}
+  .nc-btn{position:relative;overflow:hidden;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;height:56px;border:0;border-radius:14px;cursor:pointer;
+    font-family:inherit;font-size:1rem;font-weight:800;letter-spacing:.01em;color:var(--ink);
+    background:linear-gradient(135deg,var(--gold-1) 0%,var(--gold) 35%,var(--gold-4) 52%,#ffe14a 70%,var(--acento) 100%);background-size:180% 180%;
+    box-shadow:0 10px 30px -10px rgba(var(--gold-rgb),.6),inset 0 1px 0 rgba(255,255,255,.5);transition:transform .2s,background-position .6s,box-shadow .25s}
+  .nc-btn:hover{background-position:100% 50%;transform:translateY(-2px);box-shadow:0 16px 36px -12px rgba(var(--gold-rgb),.75)}
+  .nc-btn:disabled{filter:brightness(.75);cursor:wait;transform:none}
+  .nc-btn svg,.nc-ghost svg{width:20px;height:20px;flex:none}
+  .nc-result{margin-top:16px;padding:16px;border-radius:14px;background:rgba(var(--gold-rgb),.06);border:1px dashed rgba(var(--gold-rgb),.4);animation:ncIn .45s cubic-bezier(.2,.8,.2,1)}
+  .nc-ok{font-weight:700;font-size:.9rem;color:#8fe3b5;margin-bottom:10px}
+  .nc-linkline input{color:var(--nc-gold-l);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:16px}
+  .nc-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  .nc-ghost{display:flex;align-items:center;justify-content:center;gap:8px;height:46px;border-radius:12px;cursor:pointer;text-decoration:none;
+    font-family:inherit;font-size:.92rem;font-weight:700;color:var(--nc-gold-l);background:rgba(var(--gold-rgb),.07);border:1px solid rgba(var(--gold-rgb),.38);transition:.2s}
+  .nc-ghost:hover{background:rgba(var(--gold-rgb),.16);border-color:var(--nc-gold)}
+  .nc-ghost.nc-copied{color:#8fe3b5;border-color:#5fd39a;background:rgba(95,211,154,.1)}
+  .nc-wa{color:#c9ffdc;background:rgba(37,211,102,.1);border-color:rgba(37,211,102,.45)}
+  .nc-wa:hover{background:rgba(37,211,102,.2);border-color:#25d366}
+  .nc-error{margin-top:12px;color:#ff8a8a;font-size:.88rem;font-weight:600}
+  @keyframes ncIn{from{opacity:0;transform:translateY(8px)}}
+</style>
+
+
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2><span class="num">2</span> Cadastros recebidos <span class="count" id="count">0</span></h2>
+        <div class="tools">
+          <input type="search" id="busca" placeholder="Buscar por nome, CPF, telefone…">
+        </div>
+      </div>
+      <div id="lista" class="lista"></div>
+      <div id="vazio" class="vazio" hidden>
+        <div class="vazio-ic">📭</div>
+        <p>Nenhum cadastro recebido ainda.</p>
+        <small>Assim que um cliente preencher o link, ele aparece aqui automaticamente.</small>
+      </div>
+      <h3 class="sub">Links aguardando preenchimento</h3>
+      <div id="pendentes" class="pendentes"></div>
+    </section>
+  </div>
+  </div>
+  <div id="abaVitrine" role="tabpanel" aria-labelledby="tabVitrine" hidden>
+    <section class="intro">
+      <h1>Vitrine <span class="gold-text">pública</span></h1>
+      <p>Cadastre o aparelho com as fotos do seu celular ou com um desenho genérico. A foto real aparece na frente. Sem foto, a loja mostra “Imagem ilustrativa”. O IMEI fica só no painel.</p>
+      <a class="btn-ghost ver-vitrine" id="verVitrine" href="index.html">Ver vitrine</a>
+    </section>
+    <div class="vit-layout">
+      <section class="panel">
+        <h2>Aparelhos</h2>
+        <div id="vitLista" class="vit-lista"></div>
+      </section>
+      <section class="panel">
+        <h2 id="vitTitulo">Novo aparelho</h2>
+        <form id="vitForm" class="vit-form" novalidate>
+          <div class="vit-2">
+            <label>Marca<input id="vitMarca" maxlength="40" placeholder="Apple, Samsung…" autocomplete="off"></label>
+            <label>Modelo<input id="vitModelo" maxlength="80" required placeholder="iPhone 13" autocomplete="off"></label>
+          </div>
+          <div class="vit-2">
+            <label>Armazenamento (GB)<input id="vitGb" type="number" min="1" max="2048" inputmode="numeric" placeholder="128"></label>
+            <label>RAM<input id="vitRam" maxlength="20" placeholder="8 GB" autocomplete="off"></label>
+          </div>
+          <div class="vit-2">
+            <label>Cor<input id="vitCor" list="vitCores" maxlength="40" placeholder="Preto" autocomplete="off"></label>
+            <label>Tom da ilustração<input id="vitHex" type="color" value="#1a1a1a"></label>
+          </div>
+          <datalist id="vitCores"></datalist>
+          <div class="vit-2">
+            <label>Condição
+              <select id="vitCond">
+                <option value="novo">Novo</option>
+                <option value="seminovo" selected>Seminovo</option>
+                <option value="usado">Usado</option>
+              </select>
+            </label>
+            <label>Preço (R$)<input id="vitPreco" inputmode="decimal" placeholder="2499" autocomplete="off"></label>
+          </div>
+          <label>Fotos do aparelho
+            <input id="vitArquivos" type="file" accept="image/*" multiple>
+          </label>
+          <p class="vit-nota">Galeria ou câmera, até 4 fotos. Elas são reduzidas neste navegador e gravadas no Firestore, sem Firebase Storage. Fotos reais aparecem no lugar da ilustração.</p>
+          <div id="vitThumbs" class="thumbs"></div>
+          <p class="vit-nota">Ou escolha um desenho genérico (não é foto de fabricante). A cor acima pinta o aparelho.</p>
+          <div id="vitMocks" class="mocks" role="listbox" aria-label="Ilustração do aparelho"></div>
+          <label>Endereço de uma imagem (opcional)
+            <input id="vitUrl" type="url" maxlength="500" placeholder="https://…" autocomplete="off">
+          </label>
+          <div id="vitPreview" class="vit-preview"></div>
+          <label>Descrição curta<textarea id="vitDesc" maxlength="280" placeholder="Estado da tela, uso, o que acompanha…"></textarea></label>
+          <div class="vit-2">
+            <label>Saúde da bateria (%)<input id="vitSaude" type="number" min="0" max="100" inputmode="numeric" placeholder="91"></label>
+            <label class="vit-check"><input id="vitBateria" type="checkbox"> Bateria trocada</label>
+          </div>
+          <label>Peças trocadas / observações<textarea id="vitPecas" maxlength="400"></textarea></label>
+          <label>Garantia<input id="vitGarantia" maxlength="80" value="3 meses de garantia da loja"></label>
+          <div class="vit-2">
+            <label class="vit-check"><input id="vitCaixa" type="checkbox"> Acompanha caixa</label>
+            <label class="vit-check"><input id="vitCarregador" type="checkbox"> Acompanha carregador</label>
+          </div>
+          <label>IMEI <i>(não aparece na vitrine)</i><input id="vitImei" maxlength="20" inputmode="numeric" autocomplete="off"></label>
+          <div class="vit-2">
+            <label class="vit-check"><input id="vitVisivel" type="checkbox" checked> Visível na vitrine</label>
+            <label class="vit-check"><input id="vitVendido" type="checkbox"> Vendido</label>
+          </div>
+          <p id="vitMsg" class="vit-erro"></p>
+          <button class="btn-gold" id="vitSalvar" type="submit">Salvar aparelho</button>
+          <button class="btn-ghost" id="vitNovo" type="button">Limpar</button>
+        </form>
+      </section>
+    </div>
+  </div>
+  <div id="abaPedidos" role="tabpanel" aria-labelledby="tabPedidos" hidden>
+    <section class="intro">
+      <h1>Pedidos da <span class="gold-text">vitrine</span></h1>
+      <p>Interesse em aparelho, avaliação de iPhone na troca e orçamento. O mais recente aparece primeiro.</p>
+    </section>
+    <section class="panel">
+      <p id="pedMsg" class="vit-erro"></p>
+      <div id="pedLista" class="ped-lista"></div>
+    </section>
+  </div>
+  <div id="abaVendas" role="tabpanel" aria-labelledby="tabVendas" hidden>
+    <section class="intro">
+      <h1>Histórico de <span class="gold-text">vendas</span></h1>
+      <p>Todos os recibos salvos. Busque pelo IMEI, pelo nome ou pelo CPF do cliente.</p>
+    </section>
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Recibos</h2>
+        <div class="tools">
+          <input type="search" id="buscaVenda" placeholder="IMEI, nome ou CPF" autocomplete="off">
+        </div>
+      </div>
+      <div id="vendas" class="lista"></div>
+    </section>
+  </div>
+  <div id="abaSimulador" role="tabpanel" aria-labelledby="tabSimulador" hidden>
+  <div class="sim-app">
+<div class="container">
+    <div id="home" class="screen active">
+      <header>
+        <h1>SUA LOJA</h1>
+        <p>Simulador de Cartão</p>
+        <button type="button" class="calc-launch" data-go="calc" aria-label="Calculadora">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="3" width="16" height="18" rx="3"/>
+            <path d="M8 8h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/>
+          </svg>
+        </button>
+      </header>
+
+      <div class="tools">
+        <button class="tool" data-go="misto">Pagamento misto</button>
+        <button class="tool" data-go="lucro">Custo + lucro</button>
+        <button class="tool" data-go="entrada">Entrada + parcelas</button>
+        <button class="tool" data-go="avista">Desconto à vista</button>
+        <button class="tool" data-go="frete">Frete USD → BRL</button>
+      </div>
+
+      <div class="pane pane-in">
+      <div class="card">
+        <label for="valor">Valor que você quer receber</label>
+        <input type="number" id="valor" inputmode="decimal" step="0.01" min="0" value="0" placeholder="0,00">
+      </div>
+      <div class="card">
+        <label for="parcelas">Quantidade de parcelas</label>
+        <select id="parcelas"></select>
+      </div>
+      </div>
+      <div class="pane pane-out">
+      <div class="card result-card">
+        <div class="result-row">
+          <span class="result-label">Valor para o cliente</span>
+          <div class="val-side">
+            <span class="result-value total" id="valorCliente">R$ 0,00</span>
+            <button type="button" class="eye-btn" id="btnOcultar" aria-label="Ocultar">
+              <svg id="iconEye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg id="iconEyeOff" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.8 21.8 0 0 1 5.06-5.94"/><path d="M9.9 4.24A10.94 10.94 0 0 1 12 5c7 0 11 7 11 7a21.77 21.77 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+            <button type="button" class="copy-btn" data-copy="homeCliente" aria-label="Copiar"></button>
+          </div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Valor de cada parcela</span>
+          <div class="val-side">
+            <span class="result-value" id="valorParcela">R$ 0,00</span>
+            <button type="button" class="copy-btn" data-copy="homeParcela"></button>
+          </div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Complemento</span>
+          <div class="val-side">
+            <span class="result-value" id="homeNx">1x R$ 0,00</span>
+            <button type="button" class="copy-btn" data-copy="homeNx"></button>
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn wa" data-wa="home">Enviar no WhatsApp</button>
+        <button type="button" class="btn primary" data-go="maquina">Quanto vai cair na conta</button>
+        <button type="button" class="btn" id="btnRates">Ver tabela de taxas</button>
+      </div>
+      <div class="rates-table" id="ratesTable">
+        <div class="card" style="padding:12px 16px">
+          <table><thead><tr><th>Parcelas</th><th>Taxa</th></tr></thead><tbody id="ratesBody"></tbody></table>
+        </div>
+      </div>
+      </div>
+      <p class="hint">Altere o valor e as parcelas. Toque no ícone ao lado do valor para copiar.</p>
+      <p class="credit">Criado por @n1huggo</p>
+    </div>
+
+    <div id="maquina" class="screen">
+      <div class="overlay-top">
+        <button type="button" class="back" data-go="home">Voltar</button>
+        <h2>Quanto vai cair</h2>
+        <span style="width:58px"></span>
+      </div>
+      <div class="pane pane-in">
+      <div class="card">
+        <label for="valorM">Valor que vai passar na maquininha</label>
+        <input type="number" id="valorM" inputmode="decimal" step="0.01" min="0" value="0">
+      </div>
+      <div class="card">
+        <label for="parcelasM">Forma de pagamento</label>
+        <select id="parcelasM"></select>
+      </div>
+      </div>
+      <div class="pane pane-out">
+      <div class="card result-card">
+        <div class="big-pass">
+          <div class="k">Vai cair na conta</div>
+          <div class="val-side" style="justify-content:center">
+            <div class="v" id="passarValor">R$ 0,00</div>
+            <button type="button" class="copy-btn" data-copy="maqCai"></button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="result-row">
+          <span class="result-label">Taxa descontada</span>
+          <div class="val-side"><span class="result-value" id="receberValor">R$ 0,00</span><button class="copy-btn" data-copy="maqTaxaR$"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Taxa da maquininha</span>
+          <div class="val-side"><span class="result-value" id="taxaValor">0,00%</span><button class="copy-btn" data-copy="maqTaxaPct"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Valor de cada parcela</span>
+          <div class="val-side"><span class="result-value" id="parcelaMValor">R$ 0,00</span><button class="copy-btn" data-copy="maqParcela"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Complemento</span>
+          <div class="val-side"><span class="result-value" id="maqNx">1x R$ 0,00</span><button class="copy-btn" data-copy="maqNx"></button></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn wa" data-wa="maquina">Enviar no WhatsApp</button>
+      </div>
+            </div>
+<p class="credit">Criado por @n1huggo</p>
+    </div>
+
+    <div id="misto" class="screen">
+      <div class="overlay-top">
+        <button type="button" class="back" data-go="home">Voltar</button>
+        <h2>Pagamento misto</h2>
+        <span style="width:58px"></span>
+      </div>
+      <div class="pane pane-in">
+      <div class="card">
+        <label for="mistoTotal">Valor total da venda</label>
+        <input type="number" id="mistoTotal" inputmode="decimal" step="0.01" min="0" value="0">
+      </div>
+      <div class="card">
+        <label for="mistoPix">Valor no Pix</label>
+        <input type="number" id="mistoPix" inputmode="decimal" step="0.01" min="0" value="0">
+      </div>
+      <div class="card">
+        <label for="mistoParc">Parcelas do restante no cartão</label>
+        <select id="mistoParc"></select>
+      </div>
+      </div>
+      <div class="pane pane-out">
+      <div class="card result-card">
+        <div class="result-row">
+          <span class="result-label">Pix</span>
+          <div class="val-side"><span class="result-value total" id="mistoPixOut">R$ 0,00</span><button class="copy-btn" data-copy="mistoPix"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Restante (preço combinado)</span>
+          <div class="val-side"><span class="result-value" id="mistoRest">R$ 0,00</span><button class="copy-btn" data-copy="mistoRest"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Complemento do restante</span>
+          <div class="val-side"><span class="result-value" id="mistoNx">1x R$ 0,00</span><button class="copy-btn" data-copy="mistoNx"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Cai do cartão (se passar o restante)</span>
+          <div class="val-side"><span class="result-value" id="mistoCai">R$ 0,00</span><button class="copy-btn" data-copy="mistoCai"></button></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="result-row">
+          <span class="result-label">Cobrar no cartão pra receber o restante inteiro</span>
+          <div class="val-side"><span class="result-value" id="mistoCobrar">R$ 0,00</span><button class="copy-btn" data-copy="mistoCobrar"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Complemento (taxa embutida)</span>
+          <div class="val-side"><span class="result-value" id="mistoNxEmb">1x R$ 0,00</span><button class="copy-btn" data-copy="mistoNxEmb"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Resumo</span>
+          <div class="val-side"><span class="result-value" id="mistoResumo">Pix + cartão</span><button class="copy-btn" data-copy="mistoResumo"></button></div>
+        </div>
+      </div>
+      <div class="actions"><button type="button" class="btn wa" data-wa="misto">Enviar no WhatsApp</button></div>
+      </div>
+      <p class="hint">Pix à parte + restante no cartão. O resumo já vai no formato Pix + 8x R$ …</p>
+      <p class="credit">Criado por @n1huggo</p>
+    </div>
+
+    <div id="lucro" class="screen">
+      <div class="overlay-top">
+        <button type="button" class="back" data-go="home">Voltar</button>
+        <h2>Custo + lucro</h2>
+        <span style="width:58px"></span>
+      </div>
+      <div class="pane pane-in">
+      <div class="card">
+        <label for="custoAp">Custo do aparelho</label>
+        <input type="number" id="custoAp" inputmode="decimal" step="0.01" min="0" value="0">
+      </div>
+      <div class="card">
+        <label>Lucro desejado</label>
+        <div class="seg">
+          <button type="button" class="on" id="lucroTipoR">R$</button>
+          <button type="button" id="lucroTipoP">%</button>
+        </div>
+        <input type="number" id="lucroVal" inputmode="decimal" step="0.01" min="0" value="0">
+      </div>
+      <div class="card">
+        <label for="lucroParc">Venda no cartão</label>
+        <select id="lucroParc"></select>
+      </div>
+      </div>
+      <div class="pane pane-out">
+      <div class="card result-card">
+        <div class="result-row">
+          <span class="result-label">Lucro</span>
+          <div class="val-side"><span class="result-value" id="lucroOut">R$ 0,00</span><button class="copy-btn" data-copy="lucroOut"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Mínimo à vista / Pix</span>
+          <div class="val-side"><span class="result-value total" id="lucroPix">R$ 0,00</span><button class="copy-btn" data-copy="lucroPix"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Preço no cartão</span>
+          <div class="val-side"><span class="result-value" id="lucroCard">R$ 0,00</span><button class="copy-btn" data-copy="lucroCard"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Complemento</span>
+          <div class="val-side"><span class="result-value" id="lucroNx">1x R$ 0,00</span><button class="copy-btn" data-copy="lucroNx"></button></div>
+        </div>
+      </div>
+      <div class="actions"><button type="button" class="btn wa" data-wa="lucro">Enviar no WhatsApp</button></div>
+      </div>
+      <p class="hint">Custo + lucro = o que precisa cair. No cartão a taxa é embutida.</p>
+      <p class="credit">Criado por @n1huggo</p>
+    </div>
+
+    <div id="entrada" class="screen">
+      <div class="overlay-top">
+        <button type="button" class="back" data-go="home">Voltar</button>
+        <h2>Entrada + parcelas</h2>
+        <span style="width:58px"></span>
+      </div>
+      <div class="pane pane-in">
+      <div class="card">
+        <label for="entTotal">Valor total</label>
+        <input type="number" id="entTotal" inputmode="decimal" step="0.01" min="0" value="0">
+      </div>
+      <div class="card">
+        <label for="entValor">Valor da entrada</label>
+        <input type="number" id="entValor" inputmode="decimal" step="0.01" min="0" value="0">
+      </div>
+      <div class="card">
+        <label for="entParc">Parcelas do restante</label>
+        <select id="entParc"></select>
+      </div>
+      </div>
+      <div class="pane pane-out">
+      <div class="card result-card">
+        <div class="result-row">
+          <span class="result-label">Entrada</span>
+          <div class="val-side"><span class="result-value total" id="entOut">R$ 0,00</span><button class="copy-btn" data-copy="entOut"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Restante</span>
+          <div class="val-side"><span class="result-value" id="entRest">R$ 0,00</span><button class="copy-btn" data-copy="entRest"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Complemento</span>
+          <div class="val-side"><span class="result-value" id="entNx">1x R$ 0,00</span><button class="copy-btn" data-copy="entNx"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Resumo</span>
+          <div class="val-side"><span class="result-value" id="entResumo">Entrada + parcelas</span><button class="copy-btn" data-copy="entResumo"></button></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="result-row">
+          <span class="result-label">Cobrar no cartão pra receber o restante</span>
+          <div class="val-side"><span class="result-value" id="entCobrar">R$ 0,00</span><button class="copy-btn" data-copy="entCobrar"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Complemento (taxa embutida)</span>
+          <div class="val-side"><span class="result-value" id="entNxEmb">1x R$ 0,00</span><button class="copy-btn" data-copy="entNxEmb"></button></div>
+        </div>
+      </div>
+      <div class="actions"><button type="button" class="btn wa" data-wa="entrada">Enviar no WhatsApp</button></div>
+            </div>
+<p class="credit">Criado por @n1huggo</p>
+    </div>
+
+    <div id="avista" class="screen">
+      <div class="overlay-top">
+        <button type="button" class="back" data-go="home">Voltar</button>
+        <h2>Desconto à vista</h2>
+        <span style="width:58px"></span>
+      </div>
+      <div class="pane pane-in">
+      <div class="card">
+        <label>Desconto configurado (digite)</label>
+        <div class="seg">
+          <button type="button" class="on" id="descTipoP">%</button>
+          <button type="button" id="descTipoR">R$</button>
+        </div>
+        <input type="number" id="descCfg" inputmode="decimal" step="0.01" min="0" value="5">
+        <p class="hint" style="margin-top:10px">Esse valor fica salvo e vale até você mudar.</p>
+      </div>
+      <div class="card">
+        <label for="avistaOrig">Valor original</label>
+        <input type="number" id="avistaOrig" inputmode="decimal" step="0.01" min="0" value="0">
+      </div>
+      </div>
+      <div class="pane pane-out">
+      <div class="card result-card">
+        <div class="result-row">
+          <span class="result-label">Desconto</span>
+          <div class="val-side"><span class="result-value" id="avistaDesc">R$ 0,00</span><button class="copy-btn" data-copy="avistaDesc"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Preço à vista</span>
+          <div class="val-side"><span class="result-value total" id="avistaFinal">R$ 0,00</span><button class="copy-btn" data-copy="avistaFinal"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Complemento</span>
+          <div class="val-side"><span class="result-value" id="avistaComp">À vista R$ 0,00</span><button class="copy-btn" data-copy="avistaComp"></button></div>
+        </div>
+      </div>
+      <div class="actions"><button type="button" class="btn wa" data-wa="avista">Enviar no WhatsApp</button></div>
+            </div>
+<p class="credit">Criado por @n1huggo</p>
+    </div>
+
+
+    <div id="frete" class="screen">
+      <div class="overlay-top">
+        <button type="button" class="back" data-go="home">Voltar</button>
+        <h2>Frete USD → BRL</h2>
+        <span style="width:58px"></span>
+      </div>
+      <div class="pane pane-in">
+      <div class="card">
+        <label for="freteValor">Valor em dólar (US$)</label>
+        <input type="number" id="freteValor" inputmode="decimal" step="0.01" min="0" placeholder="Digite aqui">
+      </div>
+      <div class="card">
+        <label for="freteCotacao">Cotação do dólar (R$)</label>
+        <input type="number" id="freteCotacao" inputmode="decimal" step="0.01" min="0" placeholder="Digite aqui">
+      </div>
+      <div class="card">
+        <label for="fretePct">Porcentagem do frete (%)</label>
+        <input type="number" id="fretePct" inputmode="decimal" step="0.1" min="0" placeholder="Digite aqui">
+      </div>
+      <div class="card">
+        <label for="freteExtra">Frete extra (R$)</label>
+        <input type="number" id="freteExtra" inputmode="decimal" step="0.01" min="0" placeholder="Digite aqui">
+      </div>
+      </div>
+      <div class="pane pane-out">
+      <div class="card result-card">
+        <div class="result-row">
+          <span class="result-label">Produto</span>
+          <div class="val-side"><span class="result-value" id="freteProd">—</span><button class="copy-btn" data-copy="freteProd"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Frete %</span>
+          <div class="val-side"><span class="result-value" id="fretePctOut">—</span><button class="copy-btn" data-copy="fretePctOut"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Frete extra</span>
+          <div class="val-side"><span class="result-value" id="freteExtraOut">—</span><button class="copy-btn" data-copy="freteExtraOut"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Total em dólar</span>
+          <div class="val-side"><span class="result-value" id="freteUsd">—</span><button class="copy-btn" data-copy="freteUsd"></button></div>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Valor final</span>
+          <div class="val-side"><span class="result-value total" id="freteBrl">—</span><button class="copy-btn" data-copy="freteBrl"></button></div>
+        </div>
+      </div>
+      <div class="actions"><button type="button" class="btn wa" data-wa="frete">Enviar no WhatsApp</button></div>
+      </div>
+      <p class="hint">Valor final = (dólar + % do frete) × cotação + frete extra em reais.</p>
+      <p class="credit">Criado por @n1huggo</p>
+    </div>
+
+    <div id="calc" class="screen">
+      <div class="c-top">
+        <button type="button" class="c-icon" id="calcMenuBtn" aria-label="Menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="3" width="16" height="18" rx="3"/>
+            <path d="M8 8h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/>
+          </svg>
+        </button>
+        <button type="button" class="back" data-go="home">Início</button>
+      </div>
+      <div class="c-display">
+        <div class="c-expr" id="cExpr"></div>
+        <div class="c-val" id="cVal">0</div>
+      </div>
+      <div class="c-pad" id="cPad">
+        <button class="ck top" id="cAc">AC</button>
+        <button class="ck top" data-fn="sign">+/−</button>
+        <button class="ck top" data-fn="pct">%</button>
+        <button class="ck op" data-op="÷">÷</button>
+        <button class="ck" data-num="7">7</button>
+        <button class="ck" data-num="8">8</button>
+        <button class="ck" data-num="9">9</button>
+        <button class="ck op" data-op="×">×</button>
+        <button class="ck" data-num="4">4</button>
+        <button class="ck" data-num="5">5</button>
+        <button class="ck" data-num="6">6</button>
+        <button class="ck op" data-op="−">−</button>
+        <button class="ck" data-num="1">1</button>
+        <button class="ck" data-num="2">2</button>
+        <button class="ck" data-num="3">3</button>
+        <button class="ck op" data-op="+">+</button>
+        <button class="ck wide" data-num="0">0</button>
+        <button class="ck" data-fn="dot">,</button>
+        <button class="ck op" data-fn="eq">=</button>
+      </div>
+      <div class="c-sheet" id="cSheet">
+        <div class="c-menu">
+          <button class="active" data-go="basic">Básica</button>
+          <button id="cOpenHist">Histórico</button>
+          <button data-go="home">Voltar ao início</button>
+        </div>
+      </div>
+      <div class="c-hist" id="cHist">
+        <div class="c-hist-head">
+          <button class="ghost" id="cHistBack">Voltar</button>
+          <h2>Histórico</h2>
+          <button class="ghost" id="cHistClear">Limpar</button>
+        </div>
+        <p class="c-hint">Toque numa conta para usar o resultado.</p>
+        <div class="c-hist-list" id="cHistList"></div>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast">Copiado</div>
+  </div>
+  </div>
+  <details id="devConfig" class="dev-config" hidden>
+    <summary>Configurações de desenvolvedor</summary>
+    <p>Aparelhos com o painel aberto. Este continua logado.</p>
+    <div id="devSessoes" class="dev-sessoes"><p>Carregando aparelhos…</p></div>
+    <button type="button" id="btnRevogar">Desconectar outros dispositivos</button>
+    <p id="devMsg" hidden></p>
+  </details>
+  </div>
+</main>
+
+<dialog id="modal" class="modal">
+  <div class="modal-in">
+    <button class="close" id="fechar" aria-label="Fechar">×</button>
+    <h2 id="mNome"></h2>
+    <p class="m-date" id="mData"></p>
+    <dl id="mDados"></dl>
+    <h3 class="sub">Recibos salvos</h3>
+    <div id="mRecibos" class="recibos"></div>
+    <div class="m-actions">
+      <a class="btn-gold" id="mRecibo" target="_blank">🧾 Novo recibo</a>
+      <a class="btn-ghost btn-wa" id="mWhats" target="_blank" rel="noopener">💬 Falar com o cliente</a>
+      <button class="btn-ghost" id="mCopiar">📋 Copiar dados</button>
+    </div>
+  </div>
+</dialog>
+
+<script src="js/simulador.js"></script>
+<script type="module" src="js/admin.js"></script>
+</body>
+</html>
