@@ -1,0 +1,98 @@
+/* Tema neutro. As cores vêm de CORES em js/config.js. */
+:root{
+  --bg:#16181d;
+  --bg-2:#22262e;
+  --card:rgba(28,32,40,.82);
+  --card-border:rgba(var(--gold-rgb),.32);
+  --line:rgba(255,255,255,.1);
+  --text:#f3f4f6;
+  --muted:#b6bcc6;
+  --gold-1:#8d6a32;
+  --gold-2:#e0b15a;
+  --gold-3:#f3ddb0;
+  --gold-4:#fff4df;
+  --gold:#e0b15a;
+  --acento:#3c4a5e;
+  --ink:#1a1c20;
+  --gold-rgb:224, 177, 90;
+  --marca-rgb:141, 106, 50;
+  --acento-rgb:60, 74, 94;
+  --gold-grad:linear-gradient(100deg,var(--gold-1) 0%,var(--gold) 34%,var(--gold-4) 50%,var(--gold) 66%,var(--acento) 100%);
+  --danger:#ff6b6b;
+  --ok:#5fd39a;
+  --radius:18px;
+  --font-title:'Saira',system-ui,sans-serif;
+  --font:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+[hidden]{display:none!important}
+*{box-sizing:border-box;margin:0;padding:0}
+html{
+  background:var(--bg);color-scheme:dark;height:100%;
+  -webkit-text-size-adjust:100%;text-size-adjust:100%;
+  overscroll-behavior:none;touch-action:manipulation;
+}
+body{
+  font-family:var(--font);color:var(--text);background-color:var(--bg);
+  min-height:100vh;min-height:100dvh;line-height:1.5;-webkit-font-smoothing:antialiased;
+  overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;
+  background-image:
+    radial-gradient(1100px 600px at 50% -10%,rgba(var(--gold-rgb),.22),transparent 58%),
+    radial-gradient(760px 520px at 110% 28%,rgba(var(--acento-rgb),.42),transparent 62%),
+    radial-gradient(700px 500px at -12% 92%,rgba(var(--marca-rgb),.38),transparent 60%);
+  background-attachment:scroll;
+}
+button,a,header,nav,summary,.aba,.rotulo-painel{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input:not([type=checkbox]):not([type=radio]),textarea,select{
+  font-size:16px;-webkit-user-select:text;user-select:text;
+}
+body::before{ /* textura sutil */
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.35;
+  background-image:radial-gradient(rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:3px 3px;
+}
+.gold-text{
+  background:var(--gold-grad);background-size:200% auto;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:shine 6s linear infinite;
+}
+@keyframes shine{to{background-position:200% center}}
+.card{
+  position:relative;background:var(--card);
+  border:1px solid var(--card-border);border-radius:var(--radius);
+  backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
+  box-shadow:0 30px 80px -30px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,236,200,.06);
+}
+.btn-gold{
+  position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:.6rem;
+  border:0;cursor:pointer;font-family:var(--font);font-weight:800;font-size:1rem;letter-spacing:.02em;
+  color:var(--ink);padding:1rem 1.6rem;border-radius:14px;
+  background:linear-gradient(135deg,var(--gold-4) 0%,var(--gold) 46%,var(--gold-1) 100%);
+  background-size:180% 180%;background-position:0% 50%;
+  box-shadow:0 10px 30px -10px rgba(var(--gold-rgb),.55),inset 0 1px 0 rgba(255,255,255,.55);
+  transition:transform .2s ease,box-shadow .25s ease,background-position .6s ease,filter .2s;
+}
+.btn-gold:hover{background-position:100% 50%;transform:translateY(-2px);box-shadow:0 16px 36px -12px rgba(var(--gold-rgb),.75),inset 0 1px 0 rgba(255,255,255,.5)}
+.btn-gold:active{transform:translateY(0) scale(.99)}
+.btn-gold:disabled{filter:grayscale(.4) brightness(.7);cursor:not-allowed;transform:none}
+.btn-ghost{
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;cursor:pointer;
+  font-family:var(--font);font-weight:700;font-size:.95rem;color:var(--gold-3);
+  background:rgba(var(--gold-rgb),.06);border:1px solid rgba(var(--gold-rgb),.35);
+  padding:.85rem 1.2rem;border-radius:12px;transition:.2s;
+}
+.btn-ghost:hover{background:rgba(var(--gold-rgb),.14);border-color:var(--gold)}
+.btn-wa{color:#d7ffe6;background:rgba(37,211,102,.10);border-color:rgba(37,211,102,.45)}
+.btn-wa:hover{background:rgba(37,211,102,.2);border-color:#25d366}
+svg.ic{width:1.15em;height:1.15em;flex:none}
+.demo-banner{position:sticky;top:0;z-index:80;text-align:center;font:500 12px/1.35 var(--font),system-ui,sans-serif;letter-spacing:.01em;color:#c8cdd6;background:#12141a;border-bottom:1px solid rgba(224,177,90,.28);padding:calc(7px + env(safe-area-inset-top,0px)) 14px 7px}
+.setup{max-width:640px;margin:0 auto;text-align:left}
+.setup h2{font-family:var(--font-title);font-weight:600;font-size:1.4rem;margin:12px 0 8px}
+.setup p,.setup li{color:#d9cfbf;font-size:.94rem}
+.setup ol{padding-left:20px;margin:12px 0 18px}
+.setup li{margin-bottom:6px}
+.setup code{color:var(--gold-3);background:rgba(var(--gold-rgb),.1);padding:1px 6px;border-radius:6px;font-size:.86em}
+.setup .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.setup .btns a{text-decoration:none}
+.loja-contato{margin-top:16px;font-size:.92rem;color:var(--muted)}
+.loja-contato a,.foot a{color:var(--gold-3);font-weight:700;text-decoration:none}
+.loja-contato a:hover,.foot a:hover{text-decoration:underline}

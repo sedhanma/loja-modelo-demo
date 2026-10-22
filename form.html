@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-title="Cadastro para recibo e garantia · {loja}">
+<head>
+<script src="js/config.js"></script>
+<script src="js/demo-aviso.js"></script>
+<meta charset="UTF-8">
+<style id="anti-frame">body{display:none !important}</style>
+<script>
+(function () {
+  if (window.top === window.self) {
+    var s = document.getElementById('anti-frame');
+    if (s) s.remove();
+  } else {
+    try { window.top.location = window.self.location; } catch (e) {}
+  }
+})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sua Loja">
+<meta name="theme-color" content="#16181d">
+<meta name="color-scheme" content="dark">
+<title>Cadastro para recibo e garantia · Sua Loja</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/logo.svg">
+<meta property="og:image" content="assets/logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Saira:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/form.css">
+</head>
+<body>
+<div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
+<main class="wrap">
+  <header class="hero">
+    <picture class="logo-marca">
+      <img class="logo" src="assets/logo.svg" alt="Sua Loja" width="512" height="512" data-logo>
+    </picture>
+    <div class="badge"><span class="dot"></span> Cadastro seguro</div>
+    <h1>Dados para gerar o recibo do aparelho, junto do <span class="gold-text">termo de garantia</span> ✅</h1>
+    <p class="lead">Preencha seus dados abaixo. Leva menos de 2 minutos e garante a emissão do seu recibo e da sua garantia.</p>
+    <div class="privacy" role="note">
+      <div class="privacy-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.6-3 8.6-7 10-4-1.4-7-5.4-7-10V6l7-3z"/><rect x="9" y="11" width="6" height="5" rx="1"/><path d="M10 11V9.5a2 2 0 0 1 4 0V11"/></svg></div>
+      <div>
+        <strong>Seus dados estão protegidos</strong>
+        <p>Seus dados são usados <b>exclusivamente</b> para a emissão da <b>nota fiscal</b>, do <b>recibo</b> e do <b>termo de garantia</b>. Não compartilhamos com terceiros.</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Link inválido -->
+  <section id="invalid" class="card state" hidden>
+    <div class="state-icon warn">!</div>
+    <h2>Link inválido ou já utilizado</h2>
+    <p id="invalidMsg">Peça um novo link para a equipe da loja.</p>
+  </section>
+
+  <form id="form" class="card form" novalidate autocomplete="on">
+    <!-- 1. Dados pessoais -->
+    <fieldset>
+      <legend><span class="step">01</span> Dados pessoais</legend>
+      <div class="field">
+        <input id="nome" name="nome" type="text" placeholder=" " autocomplete="name" required>
+        <label for="nome">Nome completo</label>
+        <small class="err">Informe nome e sobrenome.</small>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <input id="cpf" name="cpf" type="text" inputmode="numeric" placeholder=" " maxlength="14" required>
+          <label for="cpf">CPF</label>
+          <small class="err">CPF inválido. Confira os números.</small>
+        </div>
+        <div class="field">
+          <input id="nascimento" name="nascimento" type="date" placeholder=" " autocomplete="bday" required>
+          <label for="nascimento" class="fixed">Data de nascimento</label>
+          <small class="err">Informe uma data válida.</small>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- 2. Contato -->
+    <fieldset>
+      <legend><span class="step">02</span> Contato</legend>
+      <div class="grid-2">
+        <div class="field">
+          <input id="telefone" name="telefone" type="tel" inputmode="numeric" placeholder=" " maxlength="15" autocomplete="tel-national" required>
+          <label for="telefone">Telefone de contato</label>
+          <small class="err">Informe um telefone com DDD.</small>
+        </div>
+        <div class="field">
+          <input id="email" name="email" type="email" inputmode="email" placeholder=" " autocomplete="email" required>
+          <label for="email">E-mail</label>
+          <small class="err">Informe um e-mail válido.</small>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- 3. Endereço -->
+    <fieldset>
+      <legend><span class="step">03</span> Endereço</legend>
+      <div class="field cep">
+        <input id="cep" name="cep" type="text" inputmode="numeric" placeholder=" " maxlength="9" autocomplete="postal-code" required>
+        <label for="cep">CEP</label>
+        <span class="spinner" id="cepSpin" aria-hidden="true"></span>
+        <small class="hint" id="cepHint">Digite o CEP e preenchemos o endereço pra você.</small>
+        <small class="err" id="cepErr">CEP inválido.</small>
+      </div>
+      <div class="grid-addr">
+        <div class="field">
+          <input id="endereco" name="endereco" type="text" placeholder=" " autocomplete="address-line1" required>
+          <label for="endereco">Endereço (rua, avenida)</label>
+          <small class="err">Informe o endereço.</small>
+        </div>
+        <div class="field">
+          <input id="numero" name="numero" type="text" placeholder=" " required>
+          <label for="numero">Número</label>
+          <small class="err">Obrigatório.</small>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <input id="complemento" name="complemento" type="text" placeholder=" " autocomplete="address-line2">
+          <label for="complemento">Complemento <em>(apto, bloco, casa…)</em></label>
+        </div>
+        <div class="field">
+          <input id="bairro" name="bairro" type="text" placeholder=" ">
+          <label for="bairro">Bairro</label>
+        </div>
+      </div>
+      <div class="grid-city">
+        <div class="field">
+          <input id="cidade" name="cidade" type="text" placeholder=" " autocomplete="address-level2" required>
+          <label for="cidade">Cidade</label>
+          <small class="err">Informe a cidade.</small>
+        </div>
+        <div class="field">
+          <input id="uf" name="uf" type="text" placeholder=" " maxlength="2" autocomplete="address-level1">
+          <label for="uf">UF</label>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- 4. Sobre você -->
+    <fieldset>
+      <legend><span class="step">04</span> Pra gente te conhecer</legend>
+      <div class="field insta">
+        <input id="instagram" name="instagram" type="text" placeholder=" " autocapitalize="off" autocorrect="off" spellcheck="false">
+        <label for="instagram">@ do Instagram <em>(opcional)</em></label>
+        <span class="at">@</span>
+        <small class="hint">Se quiser que a gente te marque na publicação 📸</small>
+      </div>
+
+      <p class="q">Como conheceu nossa empresa?</p>
+      <div class="chips" role="radiogroup" aria-label="Como conheceu nossa empresa?">
+        <label class="chip"><input type="radio" name="comoConheceu" value="Instagram" required><span>📱 Instagram</span></label>
+        <label class="chip"><input type="radio" name="comoConheceu" value="Indicação de amigo"><span>🤝 Indicação de amigo</span></label>
+        <label class="chip"><input type="radio" name="comoConheceu" value="Google"><span>🔎 Google</span></label>
+        <label class="chip"><input type="radio" name="comoConheceu" value="WhatsApp"><span>💬 WhatsApp</span></label>
+        <label class="chip"><input type="radio" name="comoConheceu" value="Passando pela loja"><span>🏬 Passando pela loja</span></label>
+        <label class="chip"><input type="radio" name="comoConheceu" value="Outro"><span>✨ Outro</span></label>
+      </div>
+      <small class="err chips-err" id="comoErr">Escolha uma opção.</small>
+      <div class="field outro" id="outroWrap">
+        <input id="comoConheceuOutro" name="comoConheceuOutro" type="text" placeholder=" ">
+        <label for="comoConheceuOutro">Conta pra gente como foi</label>
+        <small class="err">Descreva como nos conheceu.</small>
+      </div>
+    </fieldset>
+
+    <label class="consent">
+      <input type="checkbox" id="consent" required>
+      <span class="box"></span>
+      <span>Confirmo que os dados são verdadeiros e autorizo seu uso <b>exclusivamente</b> para a emissão da nota fiscal, do recibo e do termo de garantia.</span>
+    </label>
+    <small class="err consent-err" id="consentErr">Marque para continuar.</small>
+
+    <button class="btn-gold submit" type="submit" id="submitBtn">
+      <span class="lbl">Enviar meus dados</span>
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+    <p class="secure">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      Dados usados somente para nota fiscal, recibo e garantia. Não compartilhamos com terceiros.
+    </p>
+  </form>
+
+  <!-- Sucesso -->
+  <section id="success" class="card state" hidden>
+    <div class="state-icon ok"><svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="24"/><path d="M15 27l7 7 15-16"/></svg></div>
+    <h2>Obrigado, <span id="okName" class="gold-text">cliente</span>!</h2>
+    <p>Recebemos seus dados com sucesso. Seu recibo e o termo de garantia do aparelho serão gerados pela nossa equipe.</p>
+    <p class="privacy-mini"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.6-3 8.6-7 10-4-1.4-7-5.4-7-10V6l7-3z"/><rect x="9" y="11" width="6" height="5" rx="1"/><path d="M10 11V9.5a2 2 0 0 1 4 0V11"/></svg><span>Seus dados serão usados exclusivamente para emitir sua nota fiscal, recibo e termo de garantia — nada é compartilhado com terceiros.</span></p>
+    <p>Para agilizar, toque abaixo e envie uma cópia dos dados direto no nosso WhatsApp:</p>
+    <a id="waBtn" class="btn-wa-solid" href="#" target="_blank" rel="noopener">
+      <svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 4.9 4.3 2.4.9 2.9.8 3.4.7.5-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2z"/></svg>
+      Enviar no WhatsApp da loja
+    </a>
+    <p class="muted">Qualquer dúvida, é só chamar a gente. Aproveite seu aparelho! 📱✨</p>
+  </section>
+
+  <footer class="foot">© <span id="year"></span> <span data-loja>Sua Loja</span> · Celulares novos e seminovos<br>
+    WhatsApp <a data-zap data-fone href="https://wa.me/5500000000000">(00) 00000-0000</a>
+    · <a data-instagram href="https://www.instagram.com/sualoja" target="_blank" rel="noopener">Instagram @sualoja</a><br>
+    🔒 Privacidade: seus dados são usados apenas para nota fiscal, recibo e termo de garantia e não são compartilhados com terceiros.</footer>
+</main>
+
+<script type="module" src="js/form.js"></script>
+</body>
+</html>

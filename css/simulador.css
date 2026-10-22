@@ -1,0 +1,628 @@
+/* Simulador de Taxa — estilos isolados em .sim-app para não alterar o painel. */
+html{background:var(--bg);overscroll-behavior:none;touch-action:manipulation}
+body.sim-page{margin:0;background-color:var(--bg);background-image:radial-gradient(700px 420px at 50% -8%,rgba(var(--gold-rgb),.22),transparent 62%),radial-gradient(520px 420px at 110% 18%,rgba(var(--acento-rgb),.45),transparent 64%),radial-gradient(520px 420px at -10% 100%,rgba(var(--marca-rgb),.4),transparent 64%);color:#f5f5f5;color-scheme:dark;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+html:has(body.sim-page),body.sim-page{height:100%;overflow:hidden}
+body.sim-page{display:flex;flex-direction:column}
+body.sim-page > .demo-banner{position:relative;top:auto;flex:none;z-index:80;text-align:center;font:500 12px/1.35 system-ui,sans-serif;letter-spacing:.01em;color:#c8cdd6;background:#12141a;border-bottom:1px solid rgba(224,177,90,.28);padding:7px 14px}
+body.sim-page > .sim-app:not(.calc-mode){flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:none}
+body.sim-page > .sim-app.calc-mode{flex:1 1 auto;min-height:0;overflow:hidden}
+.sim-app{
+      --card: #242830;
+      --accent: var(--gold);
+      --accent2: var(--gold-3);
+      --muted: #a0a0a0;
+      --border: #333333;
+    }
+.sim-app, .sim-app *{
+ box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+.sim-app{
+
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      background: transparent;
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px 16px 40px;
+      line-height: 1.4;
+    }
+.sim-app.calc-mode{
+ padding: 0; overflow: hidden; }
+.sim-app .container{
+ max-width: 420px; margin: 0 auto; }
+.sim-app.calc-mode .container{
+ max-width: none; }
+.sim-app header{
+ text-align: center; margin-bottom: 18px; padding-top: 12px; position: relative; }
+.sim-app header h1{
+ font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; color: var(--accent); }
+.sim-app header p{
+ font-size: 0.85rem; color: var(--muted); margin-top: 4px; }
+.sim-app .calc-launch{
+
+      position: absolute; right: 0; top: 8px;
+      width: 42px; height: 42px;
+      border: 1px solid var(--border);
+      background: #1a1a1a; color: var(--accent);
+      border-radius: 12px; display: grid; place-items: center; cursor: pointer;
+    }
+.sim-app .calc-launch:active{
+ transform: scale(.96); background: #222; }
+.sim-app .calc-launch svg{
+ width: 22px; height: 22px; }
+.sim-app .tools{
+
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+.sim-app .tool{
+
+      background: #111;
+      border: 1px solid var(--border);
+      color: var(--accent2);
+      border-radius: 14px;
+      padding: 12px 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+.sim-app .tool:active{
+ background: #1a1a1a; }
+.sim-app .card{
+
+      background: var(--card);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+    }
+.sim-app label{
+
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 8px;
+    }
+.sim-app input[type="number"], .sim-app select, .sim-app input[type="text"]{
+
+      width: 100%;
+      background: #0c0b09;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text);
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+.sim-app input:focus, .sim-app select:focus{
+
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(var(--gold-rgb), 0.2);
+    }
+.sim-app select{
+
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2394a3b8' d='M1.41 0L6 4.58 10.59 0 12 1.41l-6 6-6-6z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 40px;
+    }
+.sim-app .row2{
+ display: grid; grid-template-columns: 1.4fr .8fr; gap: 8px; }
+.sim-app .result-card{
+
+      background: linear-gradient(145deg, #1a1a1a 0%, #000000 100%);
+      border: 1px solid var(--accent);
+      box-shadow: 0 0 24px rgba(var(--gold-rgb), 0.15);
+    }
+.sim-app .result-row{
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      gap: 8px;
+    }
+.sim-app .result-row:last-child{
+ margin-bottom: 0; }
+.sim-app .result-label{
+ font-size: 0.85rem; color: var(--muted); }
+.sim-app .result-value{
+ font-size: 1.15rem; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
+.sim-app .result-value.total{
+ color: var(--accent2); font-size: 1.35rem; }
+.sim-app .val-side{
+ display: flex; align-items: center; gap: 6px; min-width: 0; }
+.sim-app .copy-btn, .sim-app .eye-btn{
+
+      flex: 0 0 auto;
+      width: 28px; height: 28px;
+      border: none; background: transparent;
+      color: var(--accent);
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: .75;
+    }
+.sim-app .copy-btn svg, .sim-app .eye-btn svg{
+ width: 15px; height: 15px; display: block; }
+.sim-app .eye-btn{
+ color: #555; opacity: .55; }
+.sim-app .eye-btn.on{
+ color: var(--accent); opacity: .85; }
+.sim-app .hint{
+ text-align: center; font-size: 0.75rem; color: var(--muted); margin-top: 20px; padding: 0 10px; }
+.sim-app .actions{
+ display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.sim-app .btn{
+
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 12px 16px;
+      border-radius: 22px;
+      cursor: pointer;
+    }
+.sim-app .btn.primary{
+ background: var(--accent); border-color: var(--accent); color: #111; }
+.sim-app .btn.wa{
+ background: #128C7E; border-color: #128C7E; color: #fff; }
+.sim-app .hidden{
+ display: none !important; }
+.sim-app .rates-table{
+ display: none; margin-top: 16px; font-size: 0.8rem; }
+.sim-app .rates-table.show{
+ display: block; }
+.sim-app .rates-table table{
+ width: 100%; border-collapse: collapse; }
+.sim-app .rates-table th, .sim-app .rates-table td{
+ padding: 6px 8px; text-align: left; border-bottom: 1px solid var(--border); }
+.sim-app .rates-table th{
+ color: var(--muted); font-weight: 600; }
+.sim-app .rates-table td:last-child{
+ text-align: right; font-variant-numeric: tabular-nums; }
+.sim-app .screen{
+ display: none; }
+.sim-app .screen.active{
+ display: block; }
+.sim-app .overlay-top{
+ display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.sim-app .overlay-top h2{
+ font-size: 1.02rem; color: var(--accent); text-align: center; flex: 1; padding: 0 6px; }
+.sim-app .back{
+ background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 20px; padding: 6px 12px; font-size: 0.8rem; }
+.sim-app .big-pass{
+ text-align: center; padding: 8px 0 4px; }
+.sim-app .big-pass .k{
+ font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+.sim-app .big-pass .v{
+ font-size: 1.7rem; font-weight: 800; color: var(--accent2); font-variant-numeric: tabular-nums; }
+.sim-app .credit{
+ margin-top: 28px; color: var(--gold); font-size: 0.7rem; text-align: center; }
+.sim-app .seg{
+
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px;
+    }
+.sim-app .seg button{
+
+      border: 1px solid var(--border); background: #0a0a0a; color: var(--muted);
+      border-radius: 10px; padding: 10px; font-weight: 700; font-size: .85rem; cursor: pointer;
+    }
+.sim-app .seg button.on{
+ border-color: var(--accent); color: var(--accent2); background: #1a1508; }
+.sim-app .toast{
+
+      position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px);
+      background: var(--gold); color: #111; font-weight: 700; font-size: .85rem;
+      padding: 10px 16px; border-radius: 20px; opacity: 0; pointer-events: none;
+      transition: .2s; z-index: 50;
+    }
+.sim-app .toast.show{
+ opacity: 1; transform: translateX(-50%) translateY(0); }
+.sim-app #calc.screen.active{
+ display: flex; flex-direction: column; height: 100dvh; background: #000; }
+.sim-app .c-top{
+ padding: calc(env(safe-area-inset-top, 10px) + 10px) 16px 0; display: flex; align-items: center; justify-content: space-between; }
+.sim-app .c-icon{
+ width: 36px; height: 36px; border: 0; background: transparent; color: #ff9f0a; display: grid; place-items: center; cursor: pointer; }
+.sim-app .c-icon svg{
+ width: 26px; height: 26px; }
+.sim-app .c-display{
+ flex: 1; display: flex; flex-direction: column; justify-content: flex-end; padding: 8px 22px 16px; }
+.sim-app .c-expr{
+ min-height: 24px; text-align: right; color: #a1a1a6; font-size: 20px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.sim-app .c-val{
+ text-align: right; font-size: 72px; font-weight: 300; line-height: 1; letter-spacing: -1.5px; overflow: hidden; white-space: nowrap; }
+.sim-app .c-val.small{
+ font-size: 48px; }
+.sim-app .c-val.tiny{
+ font-size: 36px; }
+.sim-app .c-pad{
+ padding: 0 14px 22px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.sim-app button.ck{
+ height: 78px; border: 0; border-radius: 50%; font-size: 32px; font-weight: 430; color: #fff; background: #333; cursor: pointer; }
+.sim-app button.ck.top{
+ background: #5c5c5f; color: #000; font-size: 28px; font-weight: 500; }
+.sim-app button.ck.op{
+ background: #ff9f0a; color: #fff; font-size: 34px; }
+.sim-app button.ck.op.on{
+ background: #fff; color: #ff9f0a; }
+.sim-app button.ck.wide{
+ grid-column: span 2; border-radius: 40px; text-align: left; padding-left: 30px; }
+.sim-app button.ck:active{
+ filter: brightness(1.35); }
+.sim-app .c-sheet{
+ position: absolute; inset: 0; background: rgba(0,0,0,.45); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 20; }
+.sim-app .c-sheet.open{
+ opacity: 1; pointer-events: auto; }
+.sim-app .c-menu{
+ position: absolute; top: calc(env(safe-area-inset-top, 10px) + 52px); left: 14px; width: 230px; background: #2c2c2e; border-radius: 16px; padding: 8px 0; box-shadow: 0 20px 50px rgba(0,0,0,.5); }
+.sim-app .c-menu button{
+ display: flex; align-items: center; gap: 12px; padding: 12px 16px; font-size: 17px; color: #fff; background: none; border: 0; width: 100%; text-align: left; cursor: pointer; }
+.sim-app .c-menu button.active{
+ color: #ff9f0a; }
+.sim-app .c-hist{
+ position: absolute; inset: 0; background: #000; transform: translateX(-100%); transition: transform .28s cubic-bezier(.2,.8,.2,1); z-index: 30; display: flex; flex-direction: column; }
+.sim-app .c-hist.open{
+ transform: none; }
+.sim-app .c-hist-head{
+ padding: calc(env(safe-area-inset-top, 10px) + 10px) 16px 12px; display: flex; align-items: center; justify-content: space-between; }
+.sim-app .c-hist-head h2{
+ font-size: 20px; color: #fff; }
+.sim-app .ghost{
+ background: #2c2c2e; color: #fff; border: 0; border-radius: 16px; padding: 8px 12px; font-size: 15px; cursor: pointer; }
+.sim-app .c-hist-list{
+ flex: 1; overflow: auto; padding: 8px 16px 30px; }
+.sim-app .c-empty{
+ color: #8e8e93; text-align: center; margin-top: 80px; }
+.sim-app .c-item{
+ background: #1c1c1e; border-radius: 16px; padding: 14px 16px; margin-bottom: 10px; cursor: pointer; }
+.sim-app .c-item .e{
+ color: #8e8e93; font-size: 15px; margin-bottom: 4px; }
+.sim-app .c-item .r{
+ font-size: 26px; }
+.sim-app .c-hint{
+ color: #636366; font-size: 13px; padding: 0 16px 12px; }
+.sim-app #calc{
+ position: relative; }
+.sim-app{
+ color-scheme: dark; --sat: env(safe-area-inset-top, 0px); --sab: env(safe-area-inset-bottom, 0px); --sal: env(safe-area-inset-left, 0px); --sar: env(safe-area-inset-right, 0px); }
+.sim-app{
+ -webkit-text-size-adjust: 100%; text-size-adjust: 100%; background: var(--bg); }
+.sim-app{
+
+      min-height: 100vh; min-height: 100dvh;
+      padding: calc(20px + var(--sat)) calc(16px + var(--sar)) calc(40px + var(--sab)) calc(16px + var(--sal));
+      overflow-x: hidden;
+    }
+.sim-app.calc-mode{
+ padding: 0; }
+.sim-app button, .sim-app input, .sim-app select{
+ font-family: inherit; touch-action: manipulation; }
+.sim-app button{
+ -webkit-user-select: none; user-select: none; }
+.sim-app img, .sim-app svg{
+ max-width: 100%; }
+.sim-app input[type="number"]{
+ -moz-appearance: textfield; appearance: textfield; }
+.sim-app input[type="number"]::-webkit-inner-spin-button, .sim-app input[type="number"]::-webkit-outer-spin-button{
+ -webkit-appearance: none; margin: 0; }
+.sim-app input[type="number"], .sim-app select, .sim-app input[type="text"]{
+ min-height: 52px; font-size: max(16px, 1.25rem); }
+.sim-app select option{
+ background: #111; color: var(--text); }
+.sim-app input::placeholder{
+ color: #6b7280; opacity: 1; }
+.sim-app .result-label{
+ min-width: 0; flex: 1 1 auto; }
+.sim-app .val-side{
+ flex: 0 1 auto; min-width: auto; justify-content: flex-end; }
+.sim-app .result-value{
+ white-space: nowrap; }
+.sim-app #mistoResumo, .sim-app #entResumo, .sim-app #fretePctOut{
+ white-space: normal; overflow-wrap: break-word; }
+.sim-app .big-pass .v{
+ overflow-wrap: break-word; min-width: 0; }
+.sim-app .rates-table .card{
+ overflow-x: auto; }
+.sim-app .toast{
+ bottom: calc(24px + var(--sab)); max-width: calc(100vw - 32px); }
+.sim-app .tool{
+ min-height: 44px; }
+.sim-app .btn{
+ min-height: 44px; }
+.sim-app .back{
+ min-height: 32px; cursor: pointer; }
+.sim-app .seg button{
+ min-height: 40px; }
+.sim-app header{
+ padding-left: 46px; padding-right: 46px; }
+.sim-app .overlay-top h2{
+ min-width: 0; }
+.sim-app :focus-visible{
+ outline: 2px solid var(--accent2); outline-offset: 2px; }
+.sim-app input:focus-visible, .sim-app select:focus-visible{
+ outline: none; }
+
+
+    
+    @media (pointer: coarse) {
+.sim-app .copy-btn, .sim-app .eye-btn{
+ width: 40px; height: 44px; margin: -8px -6px -8px -4px; }
+.sim-app .copy-btn svg, .sim-app .eye-btn svg{
+ width: 16px; height: 16px; }
+.sim-app .back{
+ min-height: 44px; padding: 6px 14px; }
+.sim-app .seg button{
+ min-height: 44px; }
+.sim-app .calc-launch{
+ width: 44px; height: 44px; }
+.sim-app .c-icon{
+ width: 44px; height: 44px; }
+.sim-app .ghost{
+ min-height: 44px; }
+.sim-app .c-menu button{
+ min-height: 48px; }
+
+    }
+
+
+    
+    @media (hover: hover) and (pointer: fine) {
+.sim-app .tool, .sim-app .btn, .sim-app .back, .sim-app .calc-launch, .sim-app .seg button, .sim-app .copy-btn, .sim-app .eye-btn, .sim-app .ghost, .sim-app .c-menu button, .sim-app .c-item, .sim-app button.ck, .sim-app .c-icon{
+ transition: background-color .15s, border-color .15s, color .15s, opacity .15s, filter .15s; }
+.sim-app .tool:hover{
+ background: #1a1a1a; border-color: var(--accent); }
+.sim-app .btn:hover{
+ border-color: var(--accent); color: var(--text); }
+.sim-app .btn.primary:hover{
+ background: var(--accent2); border-color: var(--accent2); color: #111; }
+.sim-app .btn.wa:hover{
+ background: #16a391; border-color: #16a391; color: #fff; }
+.sim-app .back:hover{
+ border-color: var(--accent); color: var(--text); }
+.sim-app .calc-launch:hover{
+ background: #222; border-color: var(--accent); }
+.sim-app .seg button:hover:not(.on){
+ border-color: #555; color: var(--text); }
+.sim-app .copy-btn:hover{
+ opacity: 1; }
+.sim-app .eye-btn:hover{
+ opacity: 1; }
+.sim-app .ghost:hover{
+ background: #3a3a3c; }
+.sim-app .c-menu button:hover{
+ background: #3a3a3c; }
+.sim-app .c-item:hover{
+ background: #2c2c2e; }
+.sim-app button.ck:hover{
+ filter: brightness(1.15); }
+.sim-app .c-icon:hover{
+ opacity: .8; }
+.sim-app input[type="number"]:hover:not(:focus), .sim-app select:hover:not(:focus){
+ border-color: #555; }
+.sim-app .rates-table tbody tr:hover td{
+ background: #161616; }
+
+    }
+.sim-app #calc.screen.active{
+
+      height: 100vh; height: 100dvh;
+      padding-left: var(--sal); padding-right: var(--sar);
+      
+      --k: max(40px, min(78px, calc((min(100vw, 440px) - 28px - 36px - var(--sal) - var(--sar)) / 4), calc((100vh - 190px - var(--sat) - var(--sab)) / 5)));
+    }
+
+    @supports (height: 100dvh) {
+.sim-app #calc.screen.active{
+ --k: max(40px, min(78px, calc((min(100vw, 440px) - 28px - 36px - var(--sal) - var(--sar)) / 4), calc((100dvh - 190px - var(--sat) - var(--sab)) / 5))); }
+
+    }
+.sim-app.calc-mode .container{
+ max-width: 440px; }
+.sim-app .c-pad{
+
+      grid-auto-rows: var(--k, 78px);
+      width: 100%; max-width: calc(var(--k, 78px) * 4 + 36px + 28px); margin: 0 auto;
+      padding-bottom: calc(22px + var(--sab));
+    }
+.sim-app button.ck{
+ height: auto; min-height: 0; font-size: calc(var(--k, 78px) * .41); }
+.sim-app button.ck.top{
+ font-size: calc(var(--k, 78px) * .36); }
+.sim-app button.ck.op{
+ font-size: calc(var(--k, 78px) * .44); }
+.sim-app button.ck.wide{
+ border-radius: calc(var(--k, 78px) / 2); padding-left: calc(var(--k, 78px) * .38); }
+.sim-app .c-val{
+ font-size: min(72px, 13vh); font-size: min(72px, 13dvh); }
+.sim-app .c-val.small{
+ font-size: min(48px, 10vh); font-size: min(48px, 10dvh); }
+.sim-app .c-val.tiny{
+ font-size: min(36px, 8vh); font-size: min(36px, 8dvh); }
+.sim-app .c-top{
+ padding-top: calc(var(--sat) + 10px); }
+.sim-app .c-menu{
+ top: calc(var(--sat) + 52px); max-width: calc(100% - 28px); }
+.sim-app .c-hist-head{
+ padding-top: calc(var(--sat) + 10px); }
+.sim-app .c-hist-list{
+ padding-bottom: calc(30px + var(--sab)); }
+.sim-app #calc{
+ overflow: hidden; }
+
+
+    
+    @media (orientation: landscape) and (max-height: 560px) {
+.sim-app.calc-mode .container{
+ max-width: none; border: 0; }
+.sim-app #calc.screen.active{
+
+        display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto minmax(0, 1fr);
+        --k: max(40px, min(78px, calc((100vh - 48px - var(--sat) - var(--sab)) / 5)));
+      }
+.sim-app .c-top{
+ grid-column: 1; grid-row: 1; }
+.sim-app .c-display{
+ grid-column: 1; grid-row: 2; padding-bottom: calc(16px + var(--sab)); }
+.sim-app .c-pad{
+ grid-column: 2; grid-row: 1 / span 2; align-content: center; gap: 8px; width: auto; max-width: none; margin: 0;
+        padding: calc(8px + var(--sat)) 14px calc(8px + var(--sab)); grid-template-columns: repeat(4, calc(var(--k, 78px) * 1.15)); }
+
+    }
+
+    @supports (height: 100dvh) {
+
+      @media (orientation: landscape) and (max-height: 560px) {
+.sim-app #calc.screen.active{
+ --k: max(40px, min(78px, calc((100dvh - 48px - var(--sat) - var(--sab)) / 5))); }
+
+      }
+
+    }
+
+    
+    @media (min-width: 600px) and (max-width: 759.98px) {
+.sim-app .container{
+ max-width: 520px; }
+
+    }
+
+    
+    @media (min-width: 760px) {
+.sim-app{
+ padding-top: calc(32px + var(--sat)); }
+.sim-app .container{
+ max-width: 960px; }
+.sim-app .screen.active:not(#calc){
+
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        column-gap: 24px;
+        align-items: start;
+      }
+.sim-app .screen.active:not(#calc) > *{
+ grid-column: 1 / -1; }
+.sim-app .screen.active:not(#calc) > .pane-in{
+ grid-column: 1; }
+.sim-app .screen.active:not(#calc) > .pane-out{
+ grid-column: 2; }
+.sim-app .tools{
+ grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-bottom: 20px; }
+.sim-app .tool{
+ font-size: 0.82rem; padding: 14px 10px; }
+.sim-app .overlay-top{
+ margin-bottom: 24px; }
+.sim-app .overlay-top h2{
+ font-size: 1.2rem; }
+.sim-app header h1{
+ font-size: 1.6rem; }
+.sim-app header p{
+ font-size: 0.95rem; }
+.sim-app .hint{
+ margin-top: 8px; }
+.sim-app .credit{
+ margin-top: 20px; }
+
+    }
+
+    @media (min-width: 760px) and (min-height: 560px) {
+.sim-app .pane-out{
+ position: sticky; top: 20px; }
+
+    }
+
+    @media (min-width: 1280px) {
+.sim-app .container{
+ max-width: 1040px; }
+.sim-app{
+ font-size: 17px; }
+
+    }
+
+    @media (min-width: 1920px) {
+.sim-app .container{
+ max-width: 1200px; }
+.sim-app{
+ font-size: 18px; }
+
+    }
+
+    @media (max-width: 359.98px) {
+.sim-app{
+ padding-left: calc(12px + var(--sal)); padding-right: calc(12px + var(--sar)); }
+.sim-app .card{
+ padding: 16px; }
+.sim-app .tool{
+ font-size: 0.74rem; padding: 10px 8px; }
+.sim-app .result-value{
+ font-size: 1.05rem; }
+.sim-app .result-value.total{
+ font-size: 1.2rem; }
+.sim-app .big-pass .v{
+ font-size: 1.5rem; }
+
+    }
+
+    
+    @media (min-width: 760px) {
+.sim-app.calc-mode{
+ background: #000; }
+.sim-app.calc-mode .container{
+ border-left: 1px solid #1c1c1e; border-right: 1px solid #1c1c1e; }
+
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+.sim-app, .sim-app *, .sim-app *::before, .sim-app *::after{
+ transition-duration: .01ms !important; animation-duration: .01ms !important; }
+
+    }
+
+  
+/* No painel o simulador ocupa a aba, sem moldura de página à parte. */
+.admin .sim-app{background:transparent;min-height:0;padding:0;font-family:var(--font)}
+/* Calculadora em tela cheia, por cima do cabeçalho do painel.
+   O Início e o ícone ficam abaixo do notch (safe-area), também no atalho da tela de início. */
+.admin .sim-app.calc-mode{
+  position:fixed;inset:0;z-index:40;background:#000;
+  width:auto;height:auto;min-height:0;max-height:none;
+  padding:0;overflow:hidden;overscroll-behavior:none;
+}
+.admin .sim-app.calc-mode .container{
+  width:100%;max-width:440px;height:100%;min-height:0;margin:0 auto;
+}
+.admin .sim-app.calc-mode #calc.screen.active{
+  height:100%;min-height:0;max-height:100%;
+}
+.admin .sim-app.calc-mode .c-top{
+  position:relative;z-index:25;flex:none;width:100%;
+  padding-top:calc(env(safe-area-inset-top,0px) + 10px);
+  padding-left:calc(16px + env(safe-area-inset-left,0px));
+  padding-right:calc(16px + env(safe-area-inset-right,0px));
+}
+.admin .sim-app.calc-mode .c-icon,
+.admin .sim-app.calc-mode .c-top .back{
+  position:relative;z-index:6;min-width:44px;min-height:44px;
+}
+.admin .sim-app.calc-mode .c-menu{top:calc(env(safe-area-inset-top,0px) + 62px)}
+.admin .sim-app.calc-mode .c-hist-head{
+  padding-top:calc(env(safe-area-inset-top,0px) + 10px);
+  padding-left:calc(16px + env(safe-area-inset-left,0px));
+  padding-right:calc(16px + env(safe-area-inset-right,0px));
+}
+.admin .sim-app.calc-mode .c-pad{
+  padding-bottom:calc(22px + env(safe-area-inset-bottom,0px));
+  padding-left:calc(14px + env(safe-area-inset-left,0px));
+  padding-right:calc(14px + env(safe-area-inset-right,0px));
+}

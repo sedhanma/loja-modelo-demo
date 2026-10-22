@@ -1,0 +1,299 @@
+rules_version = '2';
+
+// =====================================================================
+//  Regras de segurança do Firestore — Sua Loja
+//  Publique em: Console do Firebase > Firestore Database > Regras
+// =====================================================================
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Quem abre o painel. Use o mesmo e-mail de ADMINS e de EMAIL_GESTOR em js/config.js.
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email in [
+          'admin@sualoja.com'
+        ];
+    }
+
+    function linkDoc(id) { return /databases/$(database)/documents/links/$(id); }
+    function txt(v, min, max) { return v is string && v.size() >= min && v.size() <= max; }
+
+    // ---------------- LINKS ----------------
+    // links/{token}: { name, phone, createdAt, used }
+    match /links/{linkId} {
+      // Cliente: pode ler APENAS o link cujo token ele tem (não pode listar).
+      allow get: if true;
+      allow list, delete: if isAdmin();
+      allow create: if isAdmin()
+        && request.resource.data.used == false
+        && request.resource.data.keys().hasOnly(['name', 'phone', 'createdAt', 'used']);
+      // Cliente: só pode mudar used de false -> true, junto com a criação do cadastro (mesmo batch).
+      allow update: if isAdmin()
+        || (resource.data.used == false
+            && request.resource.data.used == true
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['used', 'usedAt'])
+            && request.resource.data.usedAt == request.time
+            && existsAfter(/databases/$(database)/documents/submissions/$(linkId)));
+    }
+
+    // ---------------- CADASTROS ----------------
+    // submissions/{token}: o ID do cadastro é o próprio token do link,
+    // então cada link só pode gerar UM cadastro.
+    match /submissions/{linkId} {
+      allow read, update, delete: if isAdmin();
+      allow create: if exists(linkDoc(linkId))
+        && get(linkDoc(linkId)).data.used == false
+        && getAfter(linkDoc(linkId)).data.used == true
+        && request.resource.data.linkId == linkId
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.keys().hasOnly([
+             'nome', 'cpf', 'nascimento', 'telefone', 'email', 'cep', 'endereco', 'numero',
+             'complemento', 'bairro', 'cidade', 'uf', 'instagram', 'comoConheceu',
+             'comoConheceuOutro', 'linkId', 'createdAt'])
+        && txt(request.resource.data.nome, 3, 120)
+        && txt(request.resource.data.cpf, 14, 14)
+        && txt(request.resource.data.nascimento, 10, 10)
+        && txt(request.resource.data.telefone, 14, 15)
+        && txt(request.resource.data.email, 5, 120)
+        && txt(request.resource.data.cep, 9, 9)
+        && txt(request.resource.data.endereco, 2, 200)
+        && txt(request.resource.data.numero, 1, 20)
+        && txt(request.resource.data.cidade, 2, 80)
+        && txt(request.resource.data.comoConheceu, 2, 40)
+        && txt(request.resource.data.get('complemento', ''), 0, 120)
+        && txt(request.resource.data.get('bairro', ''), 0, 80)
+        && txt(request.resource.data.get('uf', ''), 0, 2)
+        && txt(request.resource.data.get('instagram', ''), 0, 40)
+        && txt(request.resource.data.get('comoConheceuOutro', ''), 0, 120);
+    }
+
+    // ---------------- RECIBOS ----------------
+    // submissions/{id}/recibos/{reciboId}: vários recibos por cliente.
+    // Só o lojista lê e grava. O cliente não cria nem vê esta subcoleção.
+    match /submissions/{linkId}/recibos/{reciboId} {
+      function reciboOk() {
+        return request.resource.data.keys().hasOnly([
+            'numero', 'data', 'vendedor', 'garantia', 'codigo', 'modelo', 'imei', 'imei2',
+            'armazenamento', 'ram', 'cor', 'serial', 'condicao', 'qtd', 'valor',
+            'desconto', 'obs', 'trocaModelo', 'trocaValor', 'garantiaAte',
+            'clienteNome', 'clienteCpf', 'pagamentos', 'createdAt', 'updatedAt'])
+          && txt(request.resource.data.numero, 0, 40)
+          && txt(request.resource.data.data, 0, 10)
+          && txt(request.resource.data.vendedor, 0, 80)
+          && txt(request.resource.data.garantia, 0, 40)
+          && txt(request.resource.data.codigo, 0, 40)
+          && txt(request.resource.data.modelo, 0, 120)
+          && txt(request.resource.data.imei, 0, 40)
+          && txt(request.resource.data.get('imei2', ''), 0, 40)
+          && txt(request.resource.data.get('trocaModelo', ''), 0, 120)
+          && txt(request.resource.data.get('trocaValor', ''), 0, 40)
+          && txt(request.resource.data.get('garantiaAte', ''), 0, 10)
+          && txt(request.resource.data.get('clienteNome', ''), 0, 120)
+          && txt(request.resource.data.get('clienteCpf', ''), 0, 14)
+          && txt(request.resource.data.armazenamento, 0, 40)
+          && txt(request.resource.data.ram, 0, 40)
+          && txt(request.resource.data.cor, 0, 40)
+          && txt(request.resource.data.serial, 0, 60)
+          && txt(request.resource.data.condicao, 0, 20)
+          && txt(request.resource.data.qtd, 0, 20)
+          && txt(request.resource.data.valor, 0, 40)
+          && txt(request.resource.data.desconto, 0, 40)
+          && txt(request.resource.data.obs, 0, 2000)
+          && request.resource.data.pagamentos is list
+          && request.resource.data.pagamentos.size() <= 8
+          && request.resource.data.createdAt is timestamp
+          && request.resource.data.updatedAt == request.time;
+      }
+      allow read, delete: if isAdmin();
+      allow create: if isAdmin()
+        && reciboOk()
+        && request.resource.data.createdAt == request.time;
+      allow update: if isAdmin()
+        && reciboOk()
+        && request.resource.data.createdAt == resource.data.createdAt;
+    }
+
+    // Histórico de vendas: a consulta de todos os recibos (collection group)
+    // só é avaliada por um coringa. Continua só para o lojista, e só leitura.
+    match /{path=**}/recibos/{reciboId} {
+      allow read: if isAdmin();
+    }
+
+    // ---------------- SESSÃO DO PAINEL ----------------
+    // config/sessao: { revogadoEm } — corte antigo. Continua só com o responsável da loja.
+    function isGestor() {
+      return isAdmin()
+        && request.auth.token.email == 'admin@sualoja.com';
+    }
+    match /config/sessao {
+      allow read: if isAdmin();
+      allow create, update: if isGestor()
+        && request.resource.data.keys().hasOnly(['revogadoEm'])
+        && request.resource.data.revogadoEm == request.time;
+      allow delete: if false;
+    }
+
+    // sessoes/{id}: presença de cada aparelho logado.
+    // O lojista só mexe na própria. O responsável lê todas e pode marcar revogado.
+    match /sessoes/{sessionId} {
+      function sessaoOk(data) {
+        return data.keys().hasOnly(['email', 'device', 'createdAt', 'lastSeen', 'revogado'])
+          && data.email is string
+          && data.email == request.auth.token.email
+          && data.device is string
+          && data.device.size() > 0
+          && data.device.size() <= 80
+          && data.createdAt is timestamp
+          && data.lastSeen is timestamp
+          && data.revogado is bool;
+      }
+      allow read: if isGestor()
+        || (isAdmin() && resource.data.email == request.auth.token.email);
+      allow create: if isAdmin()
+        && sessaoOk(request.resource.data)
+        && request.resource.data.revogado == false
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.lastSeen == request.time;
+      allow update: if isAdmin() && (
+        (
+          resource.data.email == request.auth.token.email
+          && sessaoOk(request.resource.data)
+          && resource.data.revogado == false
+          && request.resource.data.revogado == false
+          && request.resource.data.createdAt == resource.data.createdAt
+          && request.resource.data.lastSeen == request.time
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastSeen', 'device'])
+        )
+        || (
+          isGestor()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['revogado'])
+          && request.resource.data.revogado == true
+        )
+      );
+      allow delete: if isAdmin() && (
+        resource.data.email == request.auth.token.email
+        || isGestor()
+      );
+    }
+
+    // ---------------- VITRINE ----------------
+    // produtos/{id}: aparelhos à venda. O IMEI fica em privado/ficha e não é público.
+    function fotosOk(fs) {
+      return fs is list && fs.size() <= 4
+        && (fs.size() < 1 || (fs[0] is string && fs[0].size() <= 200000))
+        && (fs.size() < 2 || (fs[1] is string && fs[1].size() <= 200000))
+        && (fs.size() < 3 || (fs[2] is string && fs[2].size() <= 200000))
+        && (fs.size() < 4 || (fs[3] is string && fs[3].size() <= 200000));
+    }
+    function produtoOk() {
+      let d = request.resource.data;
+      return d.keys().hasOnly([
+          'marca', 'modelo', 'armazenamento', 'ram', 'cor', 'corHex', 'condicao', 'preco',
+          'descricao', 'saudeBateria', 'bateriaTrocada', 'pecas', 'garantia',
+          'acompanhaCaixa', 'acompanhaCarregador', 'fotos', 'ilustracao', 'imagemUrl',
+          'visivel', 'vendido', 'ordem', 'createdAt', 'updatedAt'
+        ])
+        && txt(d.marca, 0, 40)
+        && txt(d.modelo, 1, 80)
+        && d.armazenamento is number && d.armazenamento >= 0 && d.armazenamento <= 2048
+        && txt(d.ram, 0, 20)
+        && txt(d.cor, 0, 40)
+        && txt(d.corHex, 7, 7)
+        && d.condicao in ['novo', 'seminovo', 'usado']
+        && d.preco is number && d.preco >= 0 && d.preco <= 2000000
+        && txt(d.descricao, 0, 280)
+        && (d.saudeBateria == null || (d.saudeBateria is number && d.saudeBateria >= 0 && d.saudeBateria <= 100))
+        && d.bateriaTrocada is bool
+        && txt(d.pecas, 0, 400)
+        && txt(d.garantia, 0, 80)
+        && d.acompanhaCaixa is bool
+        && d.acompanhaCarregador is bool
+        && fotosOk(d.fotos)
+        && d.ilustracao in ['', 'iphone-ilha', 'iphone-notch', 'android-furo', 'android-gota', 'basico']
+        && txt(d.imagemUrl, 0, 500)
+        && d.visivel is bool
+        && d.vendido is bool
+        && d.ordem is number && d.ordem >= 0 && d.ordem <= 100000
+        && d.createdAt is timestamp
+        && d.updatedAt is timestamp;
+    }
+    match /produtos/{produtoId} {
+      allow get, list: if isAdmin()
+        || (resource.data.visivel == true && resource.data.vendido == false);
+      allow create: if isAdmin() && produtoOk()
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+      allow update: if isAdmin() && produtoOk()
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if isAdmin();
+
+      match /privado/{docId} {
+        allow read: if isAdmin();
+        allow create, update: if isAdmin()
+          && docId == 'ficha'
+          && request.resource.data.keys().hasOnly(['imei'])
+          && request.resource.data.imei is string
+          && request.resource.data.imei.size() <= 20;
+        allow delete: if isAdmin();
+      }
+    }
+
+    // ---------------- PEDIDOS (formulários da vitrine) ----------------
+    // Qualquer visitante cria. Só o lojista lê, atualiza e apaga.
+    function leadFotos(fs) {
+      return fs is list && fs.size() <= 3
+        && (fs.size() < 1 || (fs[0] is string && fs[0].size() <= 200000 && fs[0].matches('data:image/jpeg;base64,.+')))
+        && (fs.size() < 2 || (fs[1] is string && fs[1].size() <= 200000 && fs[1].matches('data:image/jpeg;base64,.+')))
+        && (fs.size() < 3 || (fs[2] is string && fs[2].size() <= 200000 && fs[2].matches('data:image/jpeg;base64,.+')));
+    }
+    function leadDados() {
+      let d = request.resource.data.dados;
+      return d is map
+        && d.keys().hasOnly([
+          'nome', 'telefone', 'cidade', 'pagamento', 'mensagem', 'modelo', 'armazenamento',
+          'saudeBateria', 'pecaTrocada', 'pecas', 'estado', 'caixa', 'carregador', 'interesse',
+          'assunto', 'fotos'
+        ])
+        && txt(d.nome, 2, 80)
+        && txt(d.telefone, 8, 22)
+        && txt(d.cidade, 0, 80)
+        && d.pagamento in ['', 'avista', 'cartao', 'troca']
+        && txt(d.mensagem, 0, 600)
+        && txt(d.modelo, 0, 80)
+        && txt(d.armazenamento, 0, 20)
+        && (d.saudeBateria == null || (d.saudeBateria is number && d.saudeBateria >= 0 && d.saudeBateria <= 100))
+        && d.pecaTrocada in ['', 'nao', 'sim', 'nao-sei']
+        && txt(d.pecas, 0, 200)
+        && txt(d.estado, 0, 200)
+        && d.caixa is bool
+        && d.carregador is bool
+        && txt(d.interesse, 0, 120)
+        && txt(d.assunto, 0, 80)
+        && leadFotos(d.fotos);
+    }
+    function pedidoOk() {
+      let p = request.resource.data;
+      return p.keys().hasOnly(['tipo', 'status', 'createdAt', 'produtoId', 'produtoNome', 'preco', 'condicao', 'dados'])
+        && p.tipo in ['interesse', 'troca', 'orcamento']
+        && p.status == 'novo'
+        && p.createdAt == request.time
+        && txt(p.produtoId, 0, 80)
+        && txt(p.produtoNome, 0, 120)
+        && p.preco is number && p.preco >= 0 && p.preco <= 2000000
+        && p.condicao in ['', 'novo', 'seminovo', 'usado']
+        && (p.tipo != 'interesse' || p.produtoNome.size() > 0)
+        && (p.tipo != 'troca' || p.dados.modelo.size() > 0)
+        && leadDados();
+    }
+    match /pedidos/{pedidoId} {
+      allow create: if pedidoOk();
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Todo o resto: bloqueado.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

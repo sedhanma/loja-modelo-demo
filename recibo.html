@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-title="Recibo + Termo de Garantia · {loja}">
+<head>
+<script src="js/config.js"></script>
+<script src="js/demo-aviso.js"></script>
+<meta charset="UTF-8">
+<style id="anti-frame">body{display:none !important}</style>
+<script>
+(function () {
+  if (window.top === window.self) {
+    var s = document.getElementById('anti-frame');
+    if (s) s.remove();
+  } else {
+    try { window.top.location = window.self.location; } catch (e) {}
+  }
+})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sua Loja">
+<meta name="theme-color" content="#16181d">
+<meta name="color-scheme" content="dark">
+<title>Recibo + Termo de Garantia · Sua Loja</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/logo.svg">
+<meta property="og:image" content="assets/logo.svg">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  html{background:#000;overscroll-behavior:none;touch-action:manipulation;-webkit-text-size-adjust:100%}
+  body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#111;
+    color:#eee;
+    min-height:100vh;
+    min-height:100dvh;
+    overscroll-behavior:none;
+    -webkit-tap-highlight-color:transparent;
+    -webkit-touch-callout:none;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  button,a{-webkit-user-select:none;user-select:none}
+  input,textarea,select{-webkit-user-select:text;user-select:text}
+  [hidden]{display:none!important}
+  button,input,select,textarea{font-family:inherit}
+
+  .demo-banner{position:sticky;top:0;z-index:80;text-align:center;font:500 12px/1.35 Arial,Helvetica,sans-serif;letter-spacing:.01em;color:#c8cdd6;background:#12141a;border-bottom:1px solid rgba(224,177,90,.28);padding:calc(7px + env(safe-area-inset-top,0px)) 14px 7px}
+  .estado{max-width:720px;margin:28px auto;background:#fff;border:1px solid #000;padding:18px 20px;font-size:14px}
+
+  .tela{display:grid;grid-template-columns:minmax(300px,380px) minmax(0,1fr);gap:16px;align-items:start;padding:calc(16px + env(safe-area-inset-top,0px)) calc(16px + env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) calc(16px + env(safe-area-inset-left,0px));max-width:1280px;margin:0 auto}
+  .editor{background:#fff;border:1px solid #222;padding:14px 14px 16px;position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}
+  .editor h1{font-size:15px;margin:0 0 4px}
+  .editor .aviso{margin:0 0 12px;font-size:12px;line-height:1.4;color:#333}
+  .editor fieldset{border:1px solid #bbb;margin:0 0 10px;padding:8px 10px 10px}
+  .editor legend{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:0 4px}
+  .editor label{display:flex;flex-direction:column;gap:3px;font-size:11px;font-weight:700;margin-bottom:8px}
+  .editor label:last-child{margin-bottom:0}
+  .editor input,.editor select,.editor textarea{font-size:16px;font-weight:400;border:1px solid #888;padding:8px 7px;width:100%;background:#fff;color:#000}
+  .editor textarea{min-height:64px;resize:vertical}
+  .cols-2{display:grid;grid-template-columns:1fr 1fr;gap:0 8px}
+  .pag{border:1px dashed #999;padding:8px;margin-bottom:8px;background:#fafafa}
+  .btn{border:1px solid #111;background:#111;color:#fff;font-weight:700;font-size:13px;padding:8px 10px;cursor:pointer;width:100%}
+  .btn.sec{background:#fff;color:#111;margin-top:4px}
+  .btn.remover{background:#fff;color:#111;width:auto;padding:5px 8px;font-size:12px}
+  .salvo{font-size:12px;font-weight:700;margin:8px 0 12px;color:#0b7a32}
+  .salvo.erro{color:#a32020}
+  .imei-msg{font-weight:700;font-size:11px;min-height:1.1em}
+  .imei-msg.ok{color:#0b7a32}
+  .imei-msg.ruim{color:#a32020}
+  a.btn{display:block;text-align:center;text-decoration:none;box-sizing:border-box}
+  .btn:hover{filter:brightness(1.08)}
+  .folha-wrap{min-width:0}
+
+  /* ---------- folha A4 (o que imprime) ---------- */
+  .folha{
+    width:210mm;
+    max-width:100%;
+    margin:0 auto;
+    background:#fff;
+    color:#000;
+    padding:7mm;
+    box-shadow:0 8px 28px rgba(0,0,0,.28);
+  }
+  .canhoto{border:1px solid #000}
+  .canhoto-titulo{font-size:8pt;font-weight:700;line-height:1.25;padding:1.3mm 2mm;border-bottom:1px solid #000}
+  .canhoto-boxes{display:grid;grid-template-columns:1.15fr 1.7fr .95fr}
+  .canhoto-boxes>div{min-height:13mm;padding:1.2mm 2mm 1.6mm;border-left:1px solid #000}
+  .canhoto-boxes>div:first-child{border-left:0}
+  .corte{border-top:1px dashed #000;margin:1.6mm 2mm 2.4mm}
+  .k{display:block;font-size:6.4pt;font-weight:700;letter-spacing:.03em;text-transform:uppercase;line-height:1.15}
+  .v{display:block;font-size:8.5pt;font-weight:600;line-height:1.25;min-height:3.4mm;padding-top:.4mm;overflow-wrap:anywhere}
+  .num-venda{display:block;font-size:11pt;font-weight:700;letter-spacing:.02em;padding-top:.6mm}
+
+  .cab{display:grid;grid-template-columns:36mm 1fr 48mm;border:1px solid #000;align-items:stretch}
+  .cab-logo{border-right:1px solid #000;display:flex;align-items:center;justify-content:center;padding:1.5mm}
+  .cab-logo img{width:32mm;height:auto;display:block}
+  .cab-loja{padding:2mm 2.4mm}
+  .cab-nome{display:block;font-size:13pt;font-weight:700;line-height:1.1;margin-bottom:1mm}
+  .cab-loja p{margin:0;font-size:8pt;line-height:1.35}
+  .cab-doc{border-left:1px solid #000;padding:2mm 2.2mm;font-size:8pt;line-height:1.35}
+  .cab-doc .data{font-size:10pt;font-weight:700;margin-bottom:1.4mm}
+  .cab-doc b{font-size:9pt}
+
+  .bloco{margin-top:1.6mm}
+  .bloco-titulo{
+    font-size:7.5pt;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    border:1px solid #000;border-bottom:0;padding:.7mm 1.6mm;background:#efefef;
+    break-after:avoid;page-break-after:avoid;
+  }
+  .grade{display:grid;border-left:1px solid #000;border-right:1px solid #000}
+  .grade>div{border-top:1px solid #000;border-left:1px solid #000;padding:.7mm 1.5mm 1mm;min-height:8mm}
+  .grade>div:first-child{border-left:0}
+  .dest1{grid-template-columns:1.45fr .9fr 1fr 1.25fr}
+  .dest2{grid-template-columns:2.35fr .75fr 1.15fr .45fr;border-bottom:1px solid #000}
+  .evitar{break-inside:avoid;page-break-inside:avoid}
+
+  table{width:100%;border-collapse:collapse;background:#fff}
+  th,td{border:1px solid #000;padding:.8mm 1.3mm;vertical-align:top;font-size:8pt;line-height:1.25}
+  th{font-size:6.6pt;font-weight:700;letter-spacing:.03em;text-transform:uppercase;text-align:center;background:#efefef}
+  td.prod{overflow-wrap:anywhere}
+  td.qtd{text-align:center;white-space:nowrap}
+  td.money{text-align:right;white-space:nowrap}
+  tr.total td{font-weight:700;background:#f7f7f7}
+  thead{display:table-header-group}
+  tr{break-inside:avoid;page-break-inside:avoid}
+
+  .obs{border:1px solid #000;border-top:0;min-height:8mm;padding:1.2mm 1.6mm;font-size:8pt;line-height:1.35;white-space:pre-wrap;overflow-wrap:anywhere}
+  .adicionais{border:1px solid #000;border-top:0;padding:1.5mm 2mm 1.6mm;font-size:7.3pt;line-height:1.25;text-align:justify}
+  .gx-titulo{font-weight:700;font-size:7.6pt;text-align:left;margin:1.2mm 0 .4mm}
+  .gx-titulo:first-child{margin-top:0}
+  .gx-texto{margin:0 0 .65mm}
+  .resumo{margin:.4mm 0 0;padding-left:4.2mm;text-align:left}
+  .resumo li{margin:0 0 .4mm}
+
+  .fecho{break-inside:avoid;page-break-inside:avoid;margin-top:4mm}
+  .assinaturas{display:grid;grid-template-columns:1fr 1fr;gap:14mm}
+  .assinaturas .risco{border-top:1px solid #000;margin-top:8mm}
+  .assinaturas .quem{text-align:center;font-size:8pt;font-weight:700;padding-top:1.2mm;overflow-wrap:anywhere}
+  .obrigado{text-align:center;font-size:9pt;font-weight:700;letter-spacing:.08em;margin:3mm 0 0}
+
+  @media(max-width:980px){
+    .tela{grid-template-columns:1fr}
+    .editor{position:static;max-height:none}
+  }
+  @media print{
+    html,body{background:#fff!important}
+    .editor,.demo-banner,.estado{display:none!important}
+    .tela{display:block;padding:0;margin:0;max-width:none}
+    .folha{width:auto;max-width:none;margin:0;padding:0;box-shadow:none}
+    @page{size:A4;margin:7mm}
+  }
+</style>
+</head>
+<body>
+<p class="estado" id="estado">Carregando…</p>
+<div class="tela" id="tela" hidden>
+  <form class="editor" id="editor" autocomplete="off">
+    <h1>Preencher antes de imprimir</h1>
+    <p class="aviso">O cliente já veio do cadastro. Complete a venda, salve e imprima. Esta ficha não sai na impressão.</p>
+    <button class="btn" type="button" id="btnSalvar">Salvar recibo</button>
+    <p class="salvo" id="salvoMsg" hidden></p>
+    <button class="btn sec" type="button" id="btnPrint">Imprimir / Salvar PDF</button>
+    <a class="btn sec" href="admin.html" id="btnVoltar" style="display:block;text-align:center;text-decoration:none">Voltar ao painel</a>
+
+    <fieldset>
+      <legend>Recibo</legend>
+      <label>Número da venda<input id="fNumero" required></label>
+      <div class="cols-2">
+        <label>Data<input id="fData" type="date" required></label>
+        <label>Vendedor<input id="fVendedor" required></label>
+      </div>
+      <label>Modelo de garantia<select id="fGarantia"></select></label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Produto</legend>
+      <div class="cols-2">
+        <label>Código<input id="fCodigo" placeholder="Ex.: 10791843"></label>
+        <label>Marca / modelo<input id="fModelo" placeholder="Ex.: XIAOMI NOTE 15"></label>
+      </div>
+      <label>IMEI<input id="fImei" inputmode="numeric" maxlength="20" placeholder="15 dígitos" autocomplete="off"><span class="imei-msg" id="imeiMsg"></span></label>
+      <label>IMEI 2 <span style="font-weight:400">(opcional, dual chip)</span><input id="fImei2" inputmode="numeric" maxlength="20" placeholder="15 dígitos" autocomplete="off"><span class="imei-msg" id="imei2Msg"></span></label>
+      <a class="btn sec" id="btnImei" href="https://celularseguro.mj.gov.br" target="_blank" rel="noopener noreferrer">Consultar restrição no Celular Seguro</a>
+      <div class="cols-2">
+        <label>Armazenamento<input id="fArmazenamento" placeholder="Ex.: 256 GB"></label>
+        <label>RAM<input id="fRam" placeholder="Ex.: 8 GB"></label>
+      </div>
+      <div class="cols-2">
+        <label>Cor<input id="fCor" placeholder="Ex.: PRETO"></label>
+        <label>Serial<input id="fSerial" placeholder="Ex.: 72154/Y6SD01761"></label>
+      </div>
+      <div class="cols-2">
+        <label>Condição
+          <select id="fCondicao">
+            <option value="">Não informar</option>
+            <option value="NOVO">NOVO</option>
+            <option value="SEMINOVO">SEMINOVO</option>
+          </select>
+        </label>
+        <label>Quantidade<input id="fQtd" inputmode="decimal" value="1"></label>
+      </div>
+      <div class="cols-2">
+        <label>Valor unitário<input id="fValor" inputmode="decimal" placeholder="0,00"></label>
+        <label>Desconto<input id="fDesconto" inputmode="decimal" placeholder="0,00"></label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Pagamento</legend>
+      <p class="aviso">Uma linha para cada forma: Pix, cartão ou dinheiro.</p>
+      <div id="pags"></div>
+      <button class="btn sec" type="button" id="btnAddPag">Adicionar pagamento</button>
+    </fieldset>
+
+    <fieldset>
+      <legend>Aparelho na troca</legend>
+      <label>Modelo do aparelho dado na troca<input id="fTrocaModelo" placeholder="Ex.: IPHONE 11 64 GB"></label>
+      <label>Valor da troca<input id="fTrocaValor" inputmode="decimal" placeholder="0,00"></label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Observação</legend>
+      <label>Texto da observação<textarea id="fObs" placeholder="Opcional"></textarea></label>
+    </fieldset>
+  </form>
+
+  <div class="folha-wrap">
+    <article class="folha" id="folha">
+      <section class="canhoto evitar">
+        <div class="canhoto-titulo" id="canhotoTitulo"></div>
+        <div class="canhoto-boxes">
+          <div><span class="k">Data de recebimento</span></div>
+          <div><span class="k">Identificação e assinatura do recebedor</span></div>
+          <div>
+            <span class="k">Recibo da venda:</span>
+            <strong class="num-venda" id="canhotoNum"></strong>
+          </div>
+        </div>
+      </section>
+      <div class="corte"></div>
+
+      <header class="cab evitar">
+        <div class="cab-logo"><img src="assets/logo.svg" alt="Sua Loja" width="512" height="512" data-logo></div>
+        <div class="cab-loja">
+          <strong class="cab-nome" id="lojaNome"></strong>
+          <p id="lojaEnd"></p>
+          <p id="lojaCnpj"></p>
+          <p id="lojaTel"></p>
+        </div>
+        <div class="cab-doc">
+          <div class="data" id="cabData"></div>
+          <div>VENDEDOR: <b id="cabVend"></b></div>
+          <div style="margin-top:1.6mm">RECIBO DA VENDA: <b id="cabNum"></b></div>
+        </div>
+      </header>
+
+      <section class="bloco evitar">
+        <div class="bloco-titulo">Destinatário/Remetente</div>
+        <div class="grade dest1">
+          <div><span class="k">Nome/Razão social</span><span class="v" id="dNome"></span></div>
+          <div><span class="k">Telefone</span><span class="v" id="dTel"></span></div>
+          <div><span class="k">CPF</span><span class="v" id="dCpf"></span></div>
+          <div><span class="k">E-mail</span><span class="v" id="dEmail"></span></div>
+        </div>
+        <div class="grade dest2">
+          <div><span class="k">Endereço</span><span class="v" id="dEnd"></span></div>
+          <div><span class="k">CEP</span><span class="v" id="dCep"></span></div>
+          <div><span class="k">Cidade</span><span class="v" id="dCidade"></span></div>
+          <div><span class="k">Estado</span><span class="v" id="dUf"></span></div>
+        </div>
+      </section>
+
+      <section class="bloco">
+        <div class="bloco-titulo">Dados do produto</div>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:16mm">Cód</th>
+              <th>Produto</th>
+              <th style="width:12mm">Qtd</th>
+              <th style="width:28mm">Valor unitário</th>
+              <th style="width:24mm">Desconto</th>
+              <th style="width:28mm">Valor total</th>
+            </tr>
+          </thead>
+          <tbody id="tbProd"></tbody>
+        </table>
+      </section>
+
+      <section class="bloco">
+        <div class="bloco-titulo">Pagamento</div>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:42mm">Forma de pagamento</th>
+              <th>Detalhes</th>
+              <th style="width:28mm">Valor pago</th>
+              <th style="width:20mm">Parcelas</th>
+            </tr>
+          </thead>
+          <tbody id="tbPag"></tbody>
+        </table>
+      </section>
+
+      <section class="bloco evitar">
+        <div class="bloco-titulo">Observação</div>
+        <div class="obs" id="obsBox"></div>
+      </section>
+
+      <section class="bloco">
+        <div class="bloco-titulo">Dados adicionais</div>
+        <div class="adicionais" id="adicionais"></div>
+      </section>
+
+      <div class="fecho">
+        <div class="assinaturas">
+          <div><div class="risco"></div><div class="quem" id="assCliente"></div></div>
+          <div><div class="risco"></div><div class="quem" id="assLoja"></div></div>
+        </div>
+        <p class="obrigado">OBRIGADO PELA PREFERÊNCIA.</p>
+      </div>
+    </article>
+  </div>
+</div>
+
+<script type="module">
+import { store, MODE, demoBanner } from './js/store.js';
+import { GARANTIAS } from './js/garantias.js';
+
+demoBanner();
+
+const $ = id => document.getElementById(id);
+const C = window.NC_CONFIG || {};
+const STORE = C.STORE || {};
+const LOJA = {
+  nome: STORE.nome || C.LOJA_NOME || 'Sua Loja',
+  endereco: STORE.endereco || '',
+  cnpj: STORE.cnpj || '',
+  telefone: STORE.telefone || '',
+  instagram: STORE.instagram || '',
+  vendedorPadrao: STORE.vendedorPadrao || ''
+};
+const esc = s => String(s ?? '').replace(/[&<>"]/g, x => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[x]));
+const comLoja = s => String(s ?? '').replace(/\[loja\]/gi, LOJA.nome);
+
+function hojeISO() {
+  const d = new Date();
+  const z = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}`;
+}
+function dataBR(iso) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
+  return m ? `${m[3]}/${m[2]}/${m[1]}` : '';
+}
+function sugerirNumero() {
+  const b = crypto.getRandomValues(new Uint8Array(10));
+  return 'MP' + Array.from(b, x => String(x % 10)).join('');
+}
+function parseMoeda(v) {
+  let s = String(v ?? '').trim().replace(/\s/g, '').replace(/R\$/gi, '');
+  if (!s) return 0;
+  if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
+  const n = Number(s);
+  return Number.isFinite(n) ? Math.round(n * 100) / 100 : 0;
+}
+function parseQtd(v) {
+  const n = Number(String(v ?? '').trim().replace(',', '.'));
+  return Number.isFinite(n) && n > 0 ? n : 0;
+}
+function moeda(n) {
+  return (Number(n) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+function moedaDesconto(n) {
+  return n ? moeda(n) : 'R$';
+}
+function qtdTxt(n) {
+  if (!n) return '';
+  return Number.isInteger(n) ? String(n) : n.toLocaleString('pt-BR');
+}
+
+function linhaPagamento() {
+  const d = document.createElement('div');
+  d.className = 'pag';
+  d.innerHTML = `
+    <label>Forma de pagamento<input data-k="forma" placeholder="Ex.: CARTAO PAG BANK"></label>
+    <label>Detalhes<input data-k="detalhes" placeholder="Opcional"></label>
+    <div class="cols-2">
+      <label>Valor pago<input data-k="valor" inputmode="decimal" placeholder="0,00"></label>
+      <label>Parcelas<input data-k="parcelas" placeholder="Ex.: 9"></label>
+    </div>
+    <button class="btn remover" type="button" data-remover>Remover</button>`;
+  return d;
+}
+function lerPagamentos() {
+  return [...document.querySelectorAll('#pags .pag')].map(row => ({
+    forma: row.querySelector('[data-k="forma"]').value.trim(),
+    detalhes: row.querySelector('[data-k="detalhes"]').value.trim(),
+    valor: parseMoeda(row.querySelector('[data-k="valor"]').value),
+    parcelas: row.querySelector('[data-k="parcelas"]').value.trim()
+  }));
+}
+function textoProduto() {
+  const modelo = $('fModelo').value.trim();
+  const imei = $('fImei').value.trim();
+  const imei2 = $('fImei2').value.trim();
+  const cond = $('fCondicao').value.trim();
+  const arm = $('fArmazenamento').value.trim();
+  const cor = $('fCor').value.trim();
+  const serial = $('fSerial').value.trim();
+  const codigo = $('fCodigo').value.trim();
+  const ram = $('fRam').value.trim();
+  let s = 'Celular';
+  if (modelo) s += ' - ' + modelo.toUpperCase();
+  if (imei) s += ' - IMEI: ' + imei;
+  if (imei2) s += ' - IMEI 2: ' + imei2;
+  if (cond) s += ' - ' + cond.toUpperCase();
+  if (arm) s += ' - ' + arm;
+  if (cor) s += ' - ' + cor.toUpperCase();
+  if (serial) s += ' - ' + serial;
+  if (codigo) s += ' - Id: ' + codigo;
+  if (ram) s += ' - RAM: ' + ram;
+  return s;
+}
+function vencimentoISO(iso, g) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
+  if (!m || !g || (!g.dias && !g.meses)) return '';
+  const dt = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  if (g.meses) dt.setMonth(dt.getMonth() + g.meses);
+  else dt.setDate(dt.getDate() + g.dias);
+  const z = n => String(n).padStart(2, '0');
+  return `${dt.getFullYear()}-${z(dt.getMonth() + 1)}-${z(dt.getDate())}`;
+}
+function luhnOk(valor) {
+  const s = String(valor || '').replace(/\D/g, '');
+  if (s.length !== 15) return false;
+  let sum = 0;
+  for (let i = 0; i < s.length; i++) {
+    let d = Number(s[s.length - 1 - i]);
+    if (i % 2 === 1) { d *= 2; if (d > 9) d -= 9; }
+    sum += d;
+  }
+  return sum % 10 === 0;
+}
+function imeiEstado(valor) {
+  const s = String(valor || '').replace(/\D/g, '');
+  if (!s) return { ok: true, texto: '', cls: '' };
+  if (s.length !== 15) return { ok: false, texto: 'O IMEI precisa ter 15 dígitos.', cls: 'ruim' };
+  if (!luhnOk(s)) return { ok: false, texto: 'Dígito verificador inválido.', cls: 'ruim' };
+  return { ok: true, texto: 'IMEI válido.', cls: 'ok' };
+}
+function htmlGarantia(id, dataIso) {
+  const modelo = GARANTIAS.find(g => g.id === id) || GARANTIAS[0];
+  if (!modelo) return '';
+  const ate = dataBR(vencimentoISO(dataIso, modelo));
+  const linha = ate
+    ? `<p class="gx-titulo">Garantia válida até ${esc(ate)}.</p>`
+    : `<p class="gx-titulo">Informe a data da venda para calcular o vencimento da garantia.</p>`;
+  return linha + modelo.blocos.map(b => {
+    if (b.tipo === 'titulo') return `<p class="gx-titulo">${esc(comLoja(b.texto))}</p>`;
+    if (b.tipo === 'resumo') {
+      const itens = (b.itens || []).map(i => `<li>${esc(comLoja(i))}</li>`).join('');
+      return `<p class="gx-titulo">${esc(comLoja(b.titulo))}</p><ul class="resumo">${itens}</ul>`;
+    }
+    return `<p class="gx-texto">${esc(comLoja(b.texto))}</p>`;
+  }).join('');
+}
+function desenhar() {
+  const numero = $('fNumero').value.trim();
+  const data = dataBR($('fData').value);
+  const vendedor = $('fVendedor').value.trim();
+  $('canhotoNum').textContent = numero;
+  $('cabNum').textContent = numero;
+  $('cabData').textContent = data;
+  $('cabVend').textContent = vendedor.toUpperCase();
+
+  const qtd = parseQtd($('fQtd').value);
+  const unit = parseMoeda($('fValor').value);
+  const desc = parseMoeda($('fDesconto').value);
+  const liquido = Math.max(0, Math.round((qtd * unit - desc) * 100) / 100);
+  const prod = textoProduto();
+  $('tbProd').innerHTML = `
+    <tr>
+      <td>${esc($('fCodigo').value.trim())}</td>
+      <td class="prod">${esc(prod)}</td>
+      <td class="qtd">${esc(qtdTxt(qtd))}</td>
+      <td class="money">${esc(moeda(unit))}</td>
+      <td class="money">${esc(moedaDesconto(desc))}</td>
+      <td class="money">${esc(moeda(liquido))}</td>
+    </tr>
+    <tr class="total">
+      <td colspan="3" class="money">Total</td>
+      <td class="money">${esc(moeda(unit))}</td>
+      <td class="money">${esc(moedaDesconto(desc))}</td>
+      <td class="money">${esc(moeda(liquido))}</td>
+    </tr>`;
+
+  const est1 = imeiEstado($('fImei').value);
+  const est2 = imeiEstado($('fImei2').value);
+  $('imeiMsg').textContent = est1.texto;
+  $('imeiMsg').className = 'imei-msg ' + est1.cls;
+  $('imei2Msg').textContent = est2.texto;
+  $('imei2Msg').className = 'imei-msg ' + est2.cls;
+  const g = GARANTIAS.find(x => x.id === $('fGarantia').value);
+  const ate = dataBR(vencimentoISO($('fData').value, g));
+  let nota = document.getElementById('garantiaAte');
+  if (!nota) {
+    nota = document.createElement('p');
+    nota.id = 'garantiaAte';
+    nota.className = 'aviso';
+    $('fGarantia').closest('label').after(nota);
+  }
+  nota.textContent = ate ? `Garantia válida até ${ate}.` : '';
+
+  const pags = lerPagamentos();
+  const trocaModelo = $('fTrocaModelo').value.trim();
+  const trocaValor = parseMoeda($('fTrocaValor').value);
+  if (trocaModelo || trocaValor) pags.push({ forma: 'APARELHO NA TROCA', detalhes: trocaModelo, valor: trocaValor, parcelas: '' });
+  const totalPag = Math.round(pags.reduce((s, p) => s + p.valor, 0) * 100) / 100;
+  const linhas = pags.map(p => `
+    <tr>
+      <td>${esc(p.forma)}</td>
+      <td>${esc(p.detalhes)}</td>
+      <td class="money">${esc(moeda(p.valor))}</td>
+      <td class="qtd">${esc(p.parcelas)}</td>
+    </tr>`).join('');
+  $('tbPag').innerHTML = linhas + `
+    <tr class="total">
+      <td colspan="2" class="money">Total</td>
+      <td class="money">${esc(moeda(totalPag))}</td>
+      <td></td>
+    </tr>`;
+
+  $('obsBox').textContent = $('fObs').value.trim();
+  $('adicionais').innerHTML = htmlGarantia($('fGarantia').value, $('fData').value);
+}
+
+function prepararEditor() {
+  $('canhotoTitulo').textContent = `RECIBO DE ${LOJA.nome} OS PRODUTOS E/OU SERVIÇOS CONSTANTES NO PEDIDO`;
+  $('lojaNome').textContent = LOJA.nome;
+  $('lojaEnd').textContent = LOJA.endereco;
+  $('lojaCnpj').textContent = LOJA.cnpj ? `CNPJ: ${LOJA.cnpj}` : '';
+  const tel = [LOJA.telefone ? `Telefone: ${LOJA.telefone}` : '', LOJA.instagram].filter(Boolean).join('  ');
+  $('lojaTel').textContent = tel;
+  $('assLoja').textContent = LOJA.nome;
+
+  $('fNumero').value = sugerirNumero();
+  $('fData').value = hojeISO();
+  $('fVendedor').value = LOJA.vendedorPadrao;
+  $('fGarantia').innerHTML = GARANTIAS.map(g => `<option value="${esc(g.id)}">${esc(g.nome)}</option>`).join('');
+  $('pags').appendChild(linhaPagamento());
+
+  $('editor').addEventListener('input', desenhar);
+  $('editor').addEventListener('change', desenhar);
+  $('btnAddPag').addEventListener('click', () => {
+    const row = linhaPagamento();
+    $('pags').appendChild(row);
+    row.querySelector('input').focus();
+    desenhar();
+  });
+  $('pags').addEventListener('click', e => {
+    const btn = e.target.closest('[data-remover]');
+    if (!btn) return;
+    btn.closest('.pag').remove();
+    desenhar();
+  });
+  $('btnPrint').addEventListener('click', () => window.print());
+}
+
+function coletarRecibo() {
+  return {
+    numero: $('fNumero').value.trim(),
+    data: $('fData').value,
+    vendedor: $('fVendedor').value.trim(),
+    garantia: $('fGarantia').value,
+    codigo: $('fCodigo').value.trim(),
+    modelo: $('fModelo').value.trim(),
+    imei: $('fImei').value.replace(/\D/g, ''),
+    imei2: $('fImei2').value.replace(/\D/g, ''),
+    armazenamento: $('fArmazenamento').value.trim(),
+    ram: $('fRam').value.trim(),
+    cor: $('fCor').value.trim(),
+    serial: $('fSerial').value.trim(),
+    condicao: $('fCondicao').value,
+    qtd: $('fQtd').value.trim(),
+    valor: $('fValor').value.trim(),
+    desconto: $('fDesconto').value.trim(),
+    obs: $('fObs').value.trim(),
+    trocaModelo: $('fTrocaModelo').value.trim(),
+    trocaValor: $('fTrocaValor').value.trim(),
+    garantiaAte: vencimentoISO($('fData').value, GARANTIAS.find(g => g.id === $('fGarantia').value)),
+    clienteNome: clienteAtual.nome || '',
+    clienteCpf: clienteAtual.cpf || '',
+    pagamentos: [...document.querySelectorAll('#pags .pag')].map(row => ({
+      forma: row.querySelector('[data-k="forma"]').value.trim(),
+      detalhes: row.querySelector('[data-k="detalhes"]').value.trim(),
+      valor: row.querySelector('[data-k="valor"]').value.trim(),
+      parcelas: row.querySelector('[data-k="parcelas"]').value.trim()
+    }))
+  };
+}
+function aplicarRecibo(r) {
+  $('fNumero').value = r.numero || '';
+  $('fData').value = r.data || hojeISO();
+  $('fVendedor').value = r.vendedor || LOJA.vendedorPadrao;
+  if (r.garantia && [...$('fGarantia').options].some(o => o.value === r.garantia)) $('fGarantia').value = r.garantia;
+  $('fCodigo').value = r.codigo || '';
+  $('fModelo').value = r.modelo || '';
+  $('fImei').value = r.imei || '';
+  $('fImei2').value = r.imei2 || '';
+  $('fArmazenamento').value = r.armazenamento || '';
+  $('fRam').value = r.ram || '';
+  $('fCor').value = r.cor || '';
+  $('fSerial').value = r.serial || '';
+  $('fCondicao').value = r.condicao || '';
+  $('fQtd').value = r.qtd || '1';
+  $('fValor').value = r.valor || '';
+  $('fDesconto').value = r.desconto || '';
+  $('fObs').value = r.obs || '';
+  $('fTrocaModelo').value = r.trocaModelo || '';
+  $('fTrocaValor').value = r.trocaValor || '';
+  $('pags').innerHTML = '';
+  const pags = r.pagamentos && r.pagamentos.length ? r.pagamentos : [{}];
+  pags.forEach(p => {
+    const row = linhaPagamento();
+    $('pags').appendChild(row);
+    row.querySelector('[data-k="forma"]').value = p.forma || '';
+    row.querySelector('[data-k="detalhes"]').value = p.detalhes || '';
+    row.querySelector('[data-k="valor"]').value = p.valor || '';
+    row.querySelector('[data-k="parcelas"]').value = p.parcelas || '';
+  });
+}
+function avisoSalvo(texto, erro) {
+  const el = $('salvoMsg');
+  el.hidden = false;
+  el.textContent = texto;
+  el.classList.toggle('erro', !!erro);
+}
+
+let clienteAtual = {};
+const estado = $('estado');
+const corpo = $('tela');
+if (MODE === 'unconfigured') {
+  estado.textContent = 'Configure o Firebase primeiro (veja GUIA-INSTALACAO.md).';
+} else store.onAuth(async user => {
+  if (!user) {
+    const u = new URL('admin.html', location.href);
+    const q = new URLSearchParams(location.search);
+    if (q.get('demo') === '1') u.searchParams.set('demo', '1');
+    if (q.get('emulator') === '1') u.searchParams.set('emulator', '1');
+    location.href = u.href;
+    return;
+  }
+  try { if (!await store.vigiarSessao()) return; } catch (e) { console.error(e); }
+  const id = new URLSearchParams(location.search).get('id');
+  let c = null;
+  try { c = id ? await store.getSubmission(id) : null; } catch (e) { console.error(e); }
+  if (!c) { estado.textContent = 'Cadastro não encontrado.'; return; }
+  clienteAtual = c;
+
+  const rua = [c.endereco, c.numero].filter(Boolean).join(', ');
+  const endereco = [rua, c.complemento, c.bairro].filter(Boolean).join(', ');
+  $('dNome').textContent = c.nome || '';
+  $('dTel').textContent = c.telefone || '';
+  $('dCpf').textContent = c.cpf || '';
+  $('dEmail').textContent = c.email || '';
+  $('dEnd').textContent = endereco;
+  $('dCep').textContent = c.cep || '';
+  $('dCidade').textContent = c.cidade || '';
+  $('dUf').textContent = c.uf || '';
+  $('assCliente').textContent = c.nome || '';
+  document.title = `Recibo - ${c.nome || 'cliente'} - ${LOJA.nome}`;
+
+  prepararEditor();
+  const params = new URLSearchParams(location.search);
+  let reciboId = params.get('recibo');
+  if (reciboId) {
+    let salvo = null;
+    try { salvo = await store.getRecibo(id, reciboId); } catch (e) { console.error(e); }
+    if (!salvo) { estado.textContent = 'Recibo não encontrado.'; return; }
+    aplicarRecibo(salvo);
+  }
+  $('btnSalvar').addEventListener('click', async () => {
+    const btn = $('btnSalvar');
+    btn.disabled = true;
+    const est1 = imeiEstado($('fImei').value);
+    const est2 = imeiEstado($('fImei2').value);
+    if (!est1.ok || !est2.ok) {
+      avisoSalvo(est1.ok ? est2.texto : est1.texto, true);
+      btn.disabled = false;
+      return;
+    }
+    try {
+      const res = await store.saveRecibo(id, reciboId, coletarRecibo());
+      if (!reciboId) {
+        reciboId = res.id;
+        const u = new URL(location.href);
+        u.searchParams.set('recibo', reciboId);
+        history.replaceState(null, '', u);
+      }
+      avisoSalvo('Recibo salvo. Você pode imprimir ou editar de novo.');
+    } catch (e) {
+      console.error(e);
+      avisoSalvo(e.message || 'Não foi possível salvar o recibo.', true);
+    } finally { btn.disabled = false; }
+  });
+  desenhar();
+  estado.hidden = true;
+  corpo.hidden = false;
+});
+</script>
+</body>
+</html>
