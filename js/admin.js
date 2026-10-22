@@ -1,4 +1,3 @@
-/* Sua Loja — painel do lojista (módulo ES) */
 import { store, MODE, DEMO, demoBanner, isConfigured } from './store.js';
 import { iniciarVitrine } from './vitrine-admin.js';
 import { iniciarPedidosAdmin } from './pedidos-admin.js';
@@ -47,9 +46,6 @@ if (DEMO && !isConfigured()) {
   }
 }
 
-/* ---------- atalho na tela de início (iPhone) ----------
-   No app do perfil, link com target="_blank" abre no Safari, que não tem o login
-   do atalho e volta para a tela de entrar. Lá abrimos as páginas da loja na mesma janela. */
 const NO_ATALHO = navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
 if (NO_ATALHO) document.addEventListener('click', e => {
   const a = e.target.closest('a[target="_blank"]');
@@ -60,11 +56,9 @@ if (NO_ATALHO) document.addEventListener('click', e => {
   location.href = url.href;
 });
 
-/* ---------- inicialização / login ---------- */
 if (MODE === 'unconfigured') show('#vSetup');
 else store.onAuth(async user => {
   const email = (user && user.email || '').toLowerCase();
-  // Antes de sessão, painel ou leitura: e-mail fora da lista sai na hora.
   if (user && !emailsPermitidos().has(email)) {
     acessoNegado = true;
     painelEmail = '';
@@ -226,7 +220,6 @@ $('#devSessoes').addEventListener('click', async e => {
   }
 });
 
-/* ---------- painel ---------- */
 let iniciado = false;
 async function iniciarPainel() {
   const erro = err => {
@@ -348,7 +341,6 @@ function ligarLista() {
   $('#busca').addEventListener('input', render);
 }
 
-/* ---------- botão "Enviar link pra pegar os dados" ---------- */
 function ligarBotaoLink() {
   const fone = $('#ncFone');
   fone.addEventListener('input', () => {

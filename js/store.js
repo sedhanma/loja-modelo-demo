@@ -1,24 +1,16 @@
-/* =====================================================================
-   Camada de dados — Firebase (Firestore + Auth) ou modo demonstração.
-   Todas as páginas usam somente as funções exportadas aqui.
-   ===================================================================== */
 import { produtoPublico } from './aparelho.js';
 import { exemplosVitrine } from './exemplos-vitrine.js';
 
 const SDK = 'https://www.gstatic.com/firebasejs/12.4.0';
 const C = window.NC_CONFIG;
 
-// Modo demo só na URL desta visita (?demo=1) ou com DEMO_MODE no config.
-// Não grava no celular: um ?demo=1 antigo deixava a loja fora do Firebase para sempre.
 try { localStorage.removeItem('nc_demo'); } catch (e) {}
 const qs = new URLSearchParams(location.search);
 export function isConfigured() {
   const f = (C && C.firebaseConfig) || {};
   return !!(f.apiKey && f.projectId && !/TODO|COLE|TROQUE/i.test(String(f.apiKey) + String(f.projectId) + String(f.appId)));
 }
-// Sem Firebase preenchido, a vitrine abre com aparelhos de exemplo neste navegador.
 export const DEMO = !!(C && C.DEMO_MODE) || qs.get('demo') === '1' || !isConfigured();
-// Somente testes locais: ?emulator=1 em localhost conecta ao Firebase Emulator.
 if (qs.get('emulator') === '1') localStorage.setItem('nc_emu', '1');
 if (qs.get('emulator') === '0') localStorage.removeItem('nc_emu');
 const EMULATOR = ['localhost', '127.0.0.1'].includes(location.hostname) && localStorage.getItem('nc_emu') === '1';
@@ -91,20 +83,12 @@ function normRecibo(id, d) {
   };
 }
 
-/* ======================= Firebase ======================= */
 let fb = null;
 async function firebase() {
   if (fb) return fb;
   const [app, fs, auth] = await Promise.all([
     import(`${SDK}/firebase-app.js`), import(`${SDK}/firebase-firestore.js`), import(`${SDK}/firebase-auth.js`)]);
   const a = app.initializeApp(C.firebaseConfig);
-  // "Manter conectado" grava o login no IndexedDB e, se ele não existir, no
-  // localStorage. No iPhone o Safari apaga o localStorage ao fechar (também no
-  // atalho da tela de início) e o painel caía na tela de entrar. O IndexedDB
-  // fica. Sem a caixinha, a sessão dura só enquanto o Safari está aberto.
-  // Isso entra no initializeAuth, antes de ler quem está logado. O login não
-  // pode trocar de volta para localStorage, senão o iPhone esquece de novo.
-  // recibo.html e o simulador do painel são o mesmo site e reaproveitam a sessão.
   const manter = manterConectado();
   modoPersistencia = manter ? 'local' : 'session';
   let authInstance;
@@ -115,7 +99,6 @@ async function firebase() {
     if (!manter) await auth.setPersistence(authInstance, auth.browserSessionPersistence);
   }
   fb = { fs, au: auth, db: fs.getFirestore(a), auth: authInstance };
-  // Somente para testes locais com o Firebase Emulator (abrir com ?emulator=1 em localhost).
   if (EMULATOR) {
     fs.connectFirestoreEmulator(fb.db, '127.0.0.1', 8085);
     auth.connectAuthEmulator(fb.auth, 'http://127.0.0.1:9099', { disableWarnings: true });
@@ -163,8 +146,6 @@ async function aplicarPersistenciaNoLogin(au, auth, manter) {
     modoPersistencia = 'session';
     return;
   }
-  // Já abriu com IndexedDB (e localStorage de reserva). Não chamar
-  // setPersistence(localStorage): isso tirava o login do IndexedDB.
   if (modoPersistencia === 'local') return;
   if (await indexedDbDisponivel()) await au.setPersistence(auth, au.indexedDBLocalPersistence);
   else await au.setPersistence(auth, au.browserLocalPersistence);
@@ -349,7 +330,6 @@ const firebaseStore = {
           else id = '';
         }
       } catch (e) {
-        // Doc sumiu ou a leitura falhou: não desloga. O mesmo id é recriado abaixo.
         console.error(e);
       }
     }
@@ -449,14 +429,11 @@ const firebaseStore = {
     const s = await fs.getDoc(fs.doc(db, 'links', id));
     return s.exists() ? norm(s.id, s.data()) : null;
   },
-  // Cadastro do cliente: grava a submissão e marca o link como usado na MESMA operação (batch).
-  // As regras do Firestore (firestore.rules) garantem que isso só acontece uma vez por link.
   async submit(linkId, data) {
     const { fs, db } = await firebase();
     const b = fs.writeBatch(db);
     b.set(fs.doc(db, 'submissions', linkId), { ...data, linkId, createdAt: fs.serverTimestamp() });
     b.update(fs.doc(db, 'links', linkId), { used: true, usedAt: fs.serverTimestamp() });
-    // Sem internet o Firestore espera indefinidamente; limitamos a 25 s.
     const timeout = new Promise((_, rej) => setTimeout(() => rej(Object.assign(new Error('timeout'), { code: 'timeout' })), 25000));
     try { await Promise.race([b.commit(), timeout]); }
     catch (e) {
@@ -523,7 +500,7 @@ const firebaseStore = {
       try {
         const priv = await fs.getDoc(fs.doc(db, 'produtos', d.id, 'privado', 'ficha'));
         if (priv.exists()) imei = priv.data().imei || '';
-      } catch (e) { /* a ficha privada pode ainda não existir */ }
+      } catch (e) { }
       lista.push({ id: d.id, ...normProduto(d.data()), imei });
     }
     return lista.sort(porOrdem);
@@ -589,7 +566,6 @@ const firebaseStore = {
   },
 };
 
-/* ======================= Demo (localStorage) ======================= */
 const KEY = 'nc_demo_db';
 const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || { links: {}, submissions: {}, recibos: {} }; } catch { return { links: {}, submissions: {}, recibos: {} }; } };
 const save = db => { localStorage.setItem(KEY, JSON.stringify(db)); window.dispatchEvent(new Event('nc-demo-change')); };
@@ -754,12 +730,10 @@ const demoStore = {
 
 export const store = DEMO ? demoStore : firebaseStore;
 
-// Faixa de demonstração. js/demo-aviso.js desenha; aqui só garante se o script não rodou.
 export function demoBanner() {
   if (typeof window.ncMostrarDemo === 'function') window.ncMostrarDemo();
 }
 
-// Envio de e-mail opcional via Formspree. Na demonstração não sai nada daqui.
 export function emailFormspree(d) {
   if (DEMO || !C.FORMSPREE_ID) return;
   fetch(`https://formspree.io/f/${C.FORMSPREE_ID}`, {

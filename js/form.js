@@ -1,4 +1,3 @@
-/* Sua Loja — formulário do cliente (JS puro, módulo ES) */
 import { store, MODE, DEMO, demoBanner, emailFormspree } from './store.js';
 const { STORE_WHATSAPP, LOJA_NOME } = window.NC_CONFIG;
 {
@@ -7,7 +6,6 @@ const { STORE_WHATSAPP, LOJA_NOME } = window.NC_CONFIG;
   const linkId = new URLSearchParams(location.search).get('id');
   $('#year').textContent = new Date().getFullYear();
 
-  // ---------- máscaras ----------
   const only = v => v.replace(/\D/g, '');
   const masks = {
     cpf: v => only(v).slice(0, 11).replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2'),
@@ -27,7 +25,6 @@ const { STORE_WHATSAPP, LOJA_NOME } = window.NC_CONFIG;
     el.addEventListener('input', () => { el.value = masks[id](el.value); });
   });
 
-  // ---------- validações ----------
   function validCPF(cpf) {
     cpf = only(cpf);
     if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
@@ -70,7 +67,6 @@ const { STORE_WHATSAPP, LOJA_NOME } = window.NC_CONFIG;
     });
   });
 
-  // ---------- "Como conheceu" ----------
   const isOutro = () => form.comoConheceu.value === 'Outro';
   form.querySelectorAll('input[name=comoConheceu]').forEach(r => r.addEventListener('change', () => {
     $('#comoErr').classList.remove('show');
@@ -81,7 +77,6 @@ const { STORE_WHATSAPP, LOJA_NOME } = window.NC_CONFIG;
   }));
   $('#consent').addEventListener('change', () => { $('#consentErr').classList.remove('show'); updateProgress(); });
 
-  // ---------- CEP via ViaCEP ----------
   let lastCep = '';
   $('#cep').addEventListener('input', async e => {
     const cep = only(e.target.value);
@@ -103,7 +98,6 @@ const { STORE_WHATSAPP, LOJA_NOME } = window.NC_CONFIG;
     } finally { wrap.classList.remove('loading'); updateProgress(); }
   });
 
-  // ---------- barra de progresso ----------
   function updateProgress() {
     const req = Object.keys(rules).filter(k => k !== 'comoConheceuOutro');
     let done = req.filter(id => rules[id]($('#' + id).value)).length;
@@ -112,7 +106,6 @@ const { STORE_WHATSAPP, LOJA_NOME } = window.NC_CONFIG;
     $('#progressBar').style.width = (done / (req.length + 2) * 100) + '%';
   }
 
-  // ---------- link ----------
   async function checkLink() {
     demoBanner();
     if (MODE === 'unconfigured') return invalid(`Estamos finalizando a configuração desta página. Por favor, tente novamente mais tarde ou fale com a equipe da ${LOJA_NOME} pelo WhatsApp.`, 'Página em configuração');
@@ -124,8 +117,6 @@ const { STORE_WHATSAPP, LOJA_NOME } = window.NC_CONFIG;
         new Promise((_, rej) => setTimeout(() => rej(Object.assign(new Error('demora'), { code: 'timeout' })), 8000))
       ]);
     } catch (err) {
-      // Sem internet, deixa preencher e tenta de novo no envio.
-      // Com rede, a demora ou a falha é o Firestore ainda desligado.
       const codigo = err && err.code;
       const servicoParado = navigator.onLine && ['unavailable', 'failed-precondition', 'not-found', 'permission-denied', 'timeout'].includes(codigo);
       if (servicoParado) {
@@ -143,7 +134,6 @@ const { STORE_WHATSAPP, LOJA_NOME } = window.NC_CONFIG;
   }
   checkLink();
 
-  // ---------- envio ----------
   function data() {
     const fd = Object.fromEntries(new FormData(form).entries());
     fd.instagram = fd.instagram ? '@' + fd.instagram : '';

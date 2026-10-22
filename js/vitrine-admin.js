@@ -1,4 +1,3 @@
-/* Aba Vitrine do painel: fotos reais ou ilustração genérica. IMEI só aqui. */
 import { store, DEMO } from './store.js';
 import { comprimirFoto } from './fotos.js';
 import { FAMILIAS, CORES, produtoPublico, svgMockup, midiaAparelho, tituloAparelho, nomeCondicao, moeda, hexCor } from './aparelho.js';

@@ -1,10 +1,3 @@
-/* =====================================================================
-   Modelos de garantia impressos no recibo.
-   Para incluir outro modelo, acrescente um item neste array.
-   Onde estiver [LOJA] ou [Loja], o recibo troca pelo nome da loja.
-   Prazo: use "dias" (ex.: 90) ou "meses" (ex.: 12). O recibo calcula
-   a data de vencimento a partir da data da venda.
-   ===================================================================== */
 export const GARANTIAS = [
   {
     id: "xiaomi-90",

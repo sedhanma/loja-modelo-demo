@@ -8,8 +8,6 @@ picture.logo-marca{display:block}
   .top-logo{height:52px}
   .rotulo-painel{font-size:.58rem;letter-spacing:.06em}
 }
-/* Atalho da tela de início: a página não rola. O cabeçalho fica parado
-   (com a faixa preta do relógio) e só o miolo desce. */
 body.app{position:fixed;inset:0;width:100%;height:100%;height:100dvh;display:flex;flex-direction:column;overflow:hidden;overscroll-behavior:none;background-color:var(--bg)}
 body.app > .demo-banner{position:relative;top:auto;flex:none}
 body.app > .demo-banner + header.top{padding-top:0}
@@ -22,7 +20,6 @@ body.app .login,body.app .loading-view{min-height:100%}
 @media(max-width:719px){
   .admin{padding:16px calc(14px + env(safe-area-inset-right,0px)) calc(28px + env(safe-area-inset-bottom,0px)) calc(14px + env(safe-area-inset-left,0px))}
 }
-/* Calculadora aberta: o cabeçalho do painel não pode cobrir o Início. */
 body.calc-aberta{position:fixed;inset:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none}
 body.calc-aberta > header.top,
 body.calc-aberta > .demo-banner{display:none!important}

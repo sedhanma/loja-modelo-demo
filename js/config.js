@@ -1,13 +1,5 @@
-/* =====================================================================
-   CONFIGURAÇÃO — modelo de loja de celular
-   Este é o único arquivo da loja. Troque os valores abaixo.
-   A senha do painel NÃO fica aqui: ela é criada no Firebase.
-   Passo a passo: GUIA-INSTALACAO.md
-   ===================================================================== */
 window.NC_CONFIG = {
 
-  // Console do Firebase > Configurações do projeto > Seus apps > Web.
-  // Enquanto estiver "TODO", o site abre em demonstração neste navegador.
   firebaseConfig: {
     apiKey: "TODO",
     authDomain: "TODO",
@@ -17,21 +9,16 @@ window.NC_CONFIG = {
     appId: "TODO"
   },
 
-  // WhatsApp da loja, só números: 55 + DDD + número. Exemplo: 5511988887777
   STORE_WHATSAPP: "5500000000000",
 
-  // Aviso por e-mail a cada cadastro de cliente (Formspree). Vazio: não envia.
   FORMSPREE_ID: "",
 
-  // Demonstração pública: true impede Firebase e qualquer e-mail, mesmo com a config preenchida.
   DEMO_MODE: true,
 
   LOJA_NOME: "Sua Loja",
 
-  // E-mail que recebe os formulários da vitrine (FormSubmit). Vazio na demonstração.
   EMAIL_NOTIFICACOES: "",
 
-  // Aparece na vitrine como CIDADE/UF.
   CIDADE: "Sua Cidade",
   UF: "UF",
 
@@ -40,24 +27,18 @@ window.NC_CONFIG = {
     sabado: "Horário especial"
   },
 
-  // Se a equipe toda usa o mesmo domínio, preencha "@sualoja.com". Senão, deixe "".
   DOMINIO_LOJA: "",
 
-  // Apelido digitado no login → e-mail do Firebase. A senha não fica neste arquivo.
-  // O apelido não libera o painel: o e-mail precisa estar em ADMINS e nas regras.
   USUARIOS: {
     loja: "admin@sualoja.com"
   },
 
-  // Quem pode abrir o painel. A mesma lista de isAdmin() em firestore.rules.
   ADMINS: [
     "admin@sualoja.com"
   ],
 
-  // Quem pode ver e desconectar outros aparelhos. O mesmo e-mail de isGestor().
   EMAIL_GESTOR: "admin@sualoja.com",
 
-  // Cores. São aplicadas nas variáveis CSS ao abrir qualquer página.
   CORES: {
     fundo: "#16181d",
     fundo2: "#22262e",
@@ -74,7 +55,6 @@ window.NC_CONFIG = {
     ok: "#3eae7a"
   },
 
-  // Textos do recibo.
   STORE: {
     nome: "Sua Loja",
     endereco: "",

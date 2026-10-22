@@ -1,4 +1,3 @@
-/* Simulador de Taxa — mesmas contas, taxas e textos da versão da loja. */
 const root = document.querySelector('.sim-app');
 if (root) {
 
@@ -344,7 +343,6 @@ if (root) {
     loadDesc();
     loadFrete(); calcHome(); calcMaquina(); calcMisto(); calcLucro(); calcEntrada(); calcAvista(); calcFrete();
 
-    /* calculadora */
     const cVal = $('cVal'), cExpr = $('cExpr'), cAc = $('cAc'), cSheet = $('cSheet'), cHist = $('cHist'), cHistList = $('cHistList');
     let current = '0', prev = null, op = null, fresh = true, justEq = false, history = [], lastResult = null, snapshots = [];
     const fmt = (n) => {
@@ -430,7 +428,6 @@ if (root) {
   
 }
 
-/* Teclado físico na calculadora (Mac/Windows). */
 (function () {
   var keyMap = { '0':'[data-num="0"]','1':'[data-num="1"]','2':'[data-num="2"]','3':'[data-num="3"]','4':'[data-num="4"]',
     '5':'[data-num="5"]','6':'[data-num="6"]','7':'[data-num="7"]','8':'[data-num="8"]','9':'[data-num="9"]',

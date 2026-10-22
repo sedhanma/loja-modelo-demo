@@ -1,4 +1,3 @@
-/* Comprime fotos no navegador para caber no Firestore (plano Spark, sem Storage). */
 
 export function comprimirFoto(file) {
   return new Promise((resolve, reject) => {
